@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="zh-Hans">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>IIQE 刷题学习</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">香港保险中介人资格考试</p>
+          <h1>IIQE 卷一 / 卷三刷题</h1>
+        </div>
+        <button class="icon-button" id="themeRefresh" title="刷新题库">↻</button>
+      </header>
+
+      <main id="app" class="view"></main>
+
+      <nav class="bottom-nav" aria-label="主导航">
+        <button data-route="home" class="nav-item active">首页</button>
+        <button data-route="bank" class="nav-item">题库</button>
+        <button data-route="mistakes" class="nav-item">错题</button>
+        <button data-route="mine" class="nav-item">我的</button>
+      </nav>
+    </div>
+
+    <template id="loadingTemplate">
+      <section class="empty-state">
+        <h2>正在读取题库</h2>
+        <p>如果直接双击打开页面遇到浏览器限制，请用本地服务器打开。</p>
+      </section>
+    </template>
+
+    <script src="./data/syllabus.js"></script>
+    <script src="./app.js"></script>
+  </body>
+</html>

@@ -1,0 +1,20 @@
+*.pdf
+iiqe_offline_300.html
+sharedFiles/
+__pycache__/
+*.pyc
+tmp/
+.DS_Store
+Thumbs.db
+*.log
+.env
+.env.*
+node_modules/
+
+# Local tooling and generated caches not required for GitHub Pages.
+_vendor/
+*.py
+.cache/
+.pytest_cache/
+playwright-report/
+test-results/
