@@ -87,3 +87,53 @@ After GitHub Pages finishes publishing, verify:
 
 - No JSON, UI, PDF, offline HTML, `sharedFiles/`, `extract_questions.py`, or README content was modified during the deployment closeout check.
 - This audit file was created after the initial GitHub push, so it is a local deployment record until explicitly committed and pushed in a later step.
+
+## Final Deployment Verification
+
+Updated: 2026-05-31
+
+User confirmation:
+
+- The deployment audit commit was pushed successfully.
+- PowerShell showed: `130cb3d..17fcb03 main -> main`.
+- A follow-up `git push` showed: `Everything up-to-date`.
+
+Local Git checks:
+
+- `git status --short --branch`: local branch is aligned with `origin/main`, but the working tree contains later local UX changes from the sticky-action-bar task:
+  - `app.js`
+  - `style.css`
+  - `STICKY_ACTION_BAR_UX_AUDIT.md`
+- `git log -1 --oneline`: `17fcb03 Add deployment audit and keep project memory local`.
+- `git ls-files PROJECT_A_MEMORY.md`: empty, so `PROJECT_A_MEMORY.md` is no longer tracked by Git.
+- `Test-Path PROJECT_A_MEMORY.md`: `True`, so the local memory file still exists.
+- Tracked forbidden-file check: no PDF, `iiqe_offline_300.html`, or `sharedFiles/` is tracked.
+
+Online smoke test:
+
+- URL tested: `https://a764119732.github.io/insurance-iiqe-study-app/`
+- Home page opened successfully in Chrome.
+- Page title: `IIQE 刷题学习`.
+- Console errors: none observed from the app page during the successful home/P1/P3 checks.
+- Network / resource status:
+  - Direct resource navigation to JSON files was blocked by the Chrome automation layer, so full DevTools-style Network status could not be read.
+  - The app successfully rendered Paper 1 and Paper 3 content, which confirms the app path loaded `data/paper1_questions.json`, `data/paper3_questions.json`, and `data/syllabus.js` sufficiently for normal operation.
+- Paper 1 practice:
+  - Entered random Paper 1 practice successfully.
+  - Answered one question successfully.
+  - Plain-language explanation was visible by default.
+  - Original PDF explanation was present and collapsed by default.
+- Refresh / resume:
+  - After refresh, the app returned to the home view with progress preserved.
+  - Clicking the same Paper 1 random-practice scope caused Chrome automation to block on the native `confirm()` dialog, which is consistent with the expected "continue last practice / restart" prompt.
+  - The native dialog blocked further automated DOM reads in that tab, so the prompt text could not be copied from automation.
+- Paper 3 practice:
+  - Switched to Paper 3 successfully.
+  - Entered random Paper 3 practice successfully.
+  - A Paper 3 question rendered with four options.
+
+Notes:
+
+- This verification did not modify GitHub Pages settings.
+- This verification did not modify question-bank JSON, PDF, offline HTML, `sharedFiles/`, question text, options, `correct_answer`, `source_page`, `reference`, or `chapter/section`.
+- The sticky-action-bar UX changes are still local-only at the time of this verification and are not part of the deployed `17fcb03` Pages version.
