@@ -10,6 +10,7 @@ Thumbs.db
 .env
 .env.*
 node_modules/
+PROJECT_A_MEMORY.md
 
 # Local tooling and generated caches not required for GitHub Pages.
 _vendor/
