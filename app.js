@@ -127,6 +127,7 @@ function setRoute(nextRoute) {
 function render() {
   clearInterval(examTimer);
   examTimer = null;
+  app.classList.remove("has-sticky-actions");
   if (route === "home") renderHome();
   if (route === "bank") renderBank();
   if (route === "mistakes") renderMistakes();
@@ -695,6 +696,7 @@ function renderQuiz() {
   }
   const answer = state.answers[q.id];
   const options = t(q, "options");
+  app.classList.toggle("has-sticky-actions", Boolean(answer));
   app.innerHTML = `
     <article class="question-card">
       <div class="meta">
@@ -714,7 +716,20 @@ function renderQuiz() {
         <button class="ghost-button" onclick="toggleFavorite('${q.id}')">${state.favorites.includes(q.id) ? "取消收藏" : "收藏"}</button>
         <button class="ghost-button" onclick="markWrong('${q.id}')">加入错题本</button>
       </div>
+      ${answer ? renderQuizStickyActions(q) : ""}
     </article>
+  `;
+}
+
+function renderQuizStickyActions(q) {
+  const favoriteLabel = state.favorites.includes(q.id) ? "取消收藏" : "收藏";
+  return `
+    <div class="quiz-sticky-actions" aria-label="答题后操作">
+      <button class="ghost-button" onclick="setRoute('home')">返回</button>
+      <button class="ghost-button" onclick="toggleFavorite('${q.id}')">${favoriteLabel}</button>
+      <button class="ghost-button" onclick="prevQuestion()">上一题</button>
+      <button class="button" onclick="nextQuestion()">下一题 / 继续练习</button>
+    </div>
   `;
 }
 
@@ -734,7 +749,7 @@ function renderOption(q, letter, text, answer) {
 function renderResult(q, answer) {
   const explanationStatus = getExplanationStatus(q.simple_explanation);
   return `
-    <section class="result-box">
+    <section class="result-box" id="quizResult">
       <h3>${answer.isCorrect ? "回答正确" : "回答错误"}，正确答案：${q.correct_answer}</h3>
       <div class="explanation-header">
         <strong>大白话解析</strong>
@@ -790,6 +805,13 @@ function chooseAnswer(id, selected) {
   saveState();
   persistPracticeSession();
   renderQuiz();
+  scrollToQuizResult();
+}
+
+function scrollToQuizResult() {
+  window.requestAnimationFrame(() => {
+    document.querySelector("#quizResult")?.scrollIntoView({ behavior: "smooth", block: "start" });
+  });
 }
 
 function markWrong(id, shouldRender = true) {
