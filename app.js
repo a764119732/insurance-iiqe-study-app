@@ -60,9 +60,20 @@ function loadState() {
 }
 
 function normalizeState(saved = {}) {
+  const mistakes = {};
+  Object.entries(saved.mistakes || {}).forEach(([id, mistake]) => {
+    const source = mistake && typeof mistake === "object" ? mistake : {};
+    const wrongCount = Number.isFinite(source.wrongCount) ? source.wrongCount : Number(source.count || 0);
+    mistakes[id] = {
+      ...source,
+      count: wrongCount,
+      wrongCount,
+    };
+  });
   return {
     ...structuredClone(defaultState),
     ...saved,
+    mistakes,
     settings: { ...defaultState.settings, ...(saved.settings || {}) },
     expandedChapters: { ...defaultState.expandedChapters, ...(saved.expandedChapters || {}) },
     sessions: { ...defaultState.sessions, ...(saved.sessions || {}) },
@@ -184,7 +195,7 @@ function isSessionUsable(session) {
 
 function isUnfinishedPracticeSession(session) {
   if (!isSessionUsable(session)) return false;
-  const answered = new Set(session.answeredIds || []);
+  const answered = new Set(session.answeredIds || Object.keys(session.answers || {}));
   return session.currentIndex < session.questionIds.length - 1 || answered.size < session.questionIds.length;
 }
 
@@ -200,8 +211,93 @@ function getAnsweredIdsForQueue(ids) {
   return ids.filter((id) => !!state.answers[id]);
 }
 
+function getSessionAnsweredIdsForQueue(ids, session = state.sessions.practice) {
+  const sessionAnswers = session?.answers || {};
+  return ids.filter((id) => !!sessionAnswers[id]);
+}
+
+function hydratePracticeSessionAnswers(session) {
+  const answers = { ...(session?.answers || {}) };
+  (session?.answeredIds || []).forEach((id) => {
+    if (!answers[id] && state.answers[id]) answers[id] = { ...state.answers[id] };
+  });
+  return answers;
+}
+
+function getPracticeAnswer(id) {
+  const session = state.sessions?.practice;
+  if (!session?.questionIds?.includes(id)) return null;
+  if (session?.answers?.[id]) return session.answers[id];
+  if (session?.answeredIds?.includes(id) && state.answers[id]) return state.answers[id];
+  return null;
+}
+
+function getWrongCount(id) {
+  const mistake = state.mistakes[id];
+  if (!mistake) return 0;
+  return Number.isFinite(mistake.wrongCount) ? mistake.wrongCount : Number(mistake.count || 0);
+}
+
 function samePracticeScope(session, paper, mode, scopeKey) {
   return session?.paper === paper && session?.mode === mode && session?.scopeKey === scopeKey;
+}
+
+function continuePracticeSession(existing) {
+  quizQueue = [...existing.questionIds];
+  quizIndex = existing.currentIndex;
+  const answers = hydratePracticeSessionAnswers(existing);
+  state.sessions.practice = {
+    ...existing,
+    answers,
+    answeredIds: getSessionAnsweredIdsForQueue(quizQueue, { ...existing, answers }),
+    updatedAt: new Date().toISOString(),
+  };
+  saveState();
+  setRoute("quiz");
+}
+
+function beginPracticeSession({ paper, mode, scopeKey, validIds, startIndex = 0 }) {
+  quizQueue = validIds;
+  quizIndex = Math.min(Math.max(startIndex, 0), validIds.length - 1);
+  state.sessions.practice = {
+    paper,
+    mode,
+    scopeKey,
+    questionIds: [...quizQueue],
+    currentIndex: quizIndex,
+    answers: {},
+    answeredIds: [],
+    updatedAt: new Date().toISOString(),
+  };
+  saveState();
+  setRoute("quiz");
+}
+
+function showPracticeResumeModal({ onContinue, onRestart }) {
+  document.querySelector(".practice-resume-modal")?.remove();
+  const modal = document.createElement("div");
+  modal.className = "practice-resume-modal";
+  modal.setAttribute("role", "dialog");
+  modal.setAttribute("aria-modal", "true");
+  modal.innerHTML = `
+    <div class="practice-resume-panel">
+      <h2>检测到这个范围有未完成练习，是否继续？</h2>
+      <div class="button-row">
+        <button class="button" data-action="continue">继续上次练习</button>
+        <button class="ghost-button" data-action="restart">重新开始</button>
+      </div>
+    </div>
+  `;
+  modal.querySelector('[data-action="continue"]').addEventListener("click", () => {
+    modal.remove();
+    onContinue();
+  });
+  modal.querySelector('[data-action="restart"]').addEventListener("click", () => {
+    modal.remove();
+    onRestart();
+  });
+  document.body.appendChild(modal);
+  modal.querySelector('[data-action="continue"]').focus();
 }
 
 function startPracticeSession({ paper, mode, scopeKey, questionIds, startIndex = 0, allowResume = true }) {
@@ -219,28 +315,16 @@ function startPracticeSession({ paper, mode, scopeKey, questionIds, startIndex =
   if (
     allowResume &&
     samePracticeScope(existing, paper, mode, scopeKey) &&
-    isUnfinishedPracticeSession(existing) &&
-    confirm("发现同一范围的未完成练习：继续上次练习/重新开始？\n\n确定 = 继续上次练习\n取消 = 重新开始")
+    isUnfinishedPracticeSession(existing)
   ) {
-    quizQueue = [...existing.questionIds];
-    quizIndex = existing.currentIndex;
-    setRoute("quiz");
+    showPracticeResumeModal({
+      onContinue: () => continuePracticeSession(existing),
+      onRestart: () => beginPracticeSession({ paper, mode, scopeKey, validIds, startIndex: 0 }),
+    });
     return;
   }
 
-  quizQueue = validIds;
-  quizIndex = Math.min(Math.max(startIndex, 0), validIds.length - 1);
-  state.sessions.practice = {
-    paper,
-    mode,
-    scopeKey,
-    questionIds: [...quizQueue],
-    currentIndex: quizIndex,
-    answeredIds: getAnsweredIdsForQueue(quizQueue),
-    updatedAt: new Date().toISOString(),
-  };
-  saveState();
-  setRoute("quiz");
+  beginPracticeSession({ paper, mode, scopeKey, validIds, startIndex });
 }
 
 function persistPracticeSession() {
@@ -249,7 +333,8 @@ function persistPracticeSession() {
     ...state.sessions.practice,
     questionIds: [...quizQueue],
     currentIndex: Math.min(Math.max(quizIndex, 0), quizQueue.length - 1),
-    answeredIds: getAnsweredIdsForQueue(quizQueue),
+    answers: { ...(state.sessions.practice.answers || {}) },
+    answeredIds: getSessionAnsweredIdsForQueue(quizQueue),
     updatedAt: new Date().toISOString(),
   };
   saveState();
@@ -602,7 +687,7 @@ function renderQuestionListItem(q) {
         <span class="pill">${q.paper} 第${q.chapter}章</span>
         ${q.is_hot_question ? '<span class="pill hot">热门</span>' : ""}
         ${answer ? `<span class="pill">${answer.isCorrect ? "已答对" : "已答错"}</span>` : '<span class="pill">未做</span>'}
-        ${wrong ? `<span class="pill">错 ${wrong.count} 次</span>` : ""}
+        ${wrong ? `<span class="pill">错了 ${getWrongCount(q.id)} 次</span>` : ""}
       </div>
       <div class="button-row">
         <button class="ghost-button" onclick="openSingleQuestion('${q.id}')">刷这题</button>
@@ -694,7 +779,7 @@ function renderQuiz() {
     app.innerHTML = empty("这组练习里的题号已不存在，请重新选择练习范围。");
     return;
   }
-  const answer = state.answers[q.id];
+  const answer = getPracticeAnswer(q.id);
   const options = t(q, "options");
   app.classList.toggle("has-sticky-actions", Boolean(answer));
   app.innerHTML = `
@@ -714,7 +799,7 @@ function renderQuiz() {
         <button class="ghost-button" onclick="prevQuestion()">上一题</button>
         <button class="button" onclick="nextQuestion()">下一题</button>
         <button class="ghost-button" onclick="toggleFavorite('${q.id}')">${state.favorites.includes(q.id) ? "取消收藏" : "收藏"}</button>
-        <button class="ghost-button" onclick="markWrong('${q.id}')">加入错题本</button>
+        <button class="ghost-button" onclick="markWrong('${q.id}', true, false)">加入错题本</button>
       </div>
       ${answer ? renderQuizStickyActions(q) : ""}
     </article>
@@ -748,9 +833,11 @@ function renderOption(q, letter, text, answer) {
 
 function renderResult(q, answer) {
   const explanationStatus = getExplanationStatus(q.simple_explanation);
+  const wrongCount = getWrongCount(q.id);
   return `
     <section class="result-box" id="quizResult">
       <h3>${answer.isCorrect ? "回答正确" : "回答错误"}，正确答案：${q.correct_answer}</h3>
+      ${wrongCount > 0 ? `<p class="wrong-count-note">本题累计错了 ${wrongCount} 次</p>` : ""}
       <div class="explanation-header">
         <strong>大白话解析</strong>
         ${explanationStatus ? `<span class="explanation-status ${explanationStatus.className}">${explanationStatus.label}</span>` : ""}
@@ -792,7 +879,7 @@ function chooseAnswer(id, selected) {
   const q = byId.get(id);
   const isCorrect = selected === q.correct_answer;
   const old = state.answers[id];
-  state.answers[id] = {
+  const answerRecord = {
     selected,
     isCorrect,
     attempts: (old?.attempts || 0) + 1,
@@ -800,6 +887,14 @@ function chooseAnswer(id, selected) {
     chapter: q.chapter,
     updatedAt: new Date().toISOString(),
   };
+  state.answers[id] = answerRecord;
+  if (state.sessions?.practice?.questionIds?.includes(id)) {
+    state.sessions.practice.answers = {
+      ...(state.sessions.practice.answers || {}),
+      [id]: answerRecord,
+    };
+    state.sessions.practice.answeredIds = getSessionAnsweredIdsForQueue(quizQueue);
+  }
   state.lastQuestionId = id;
   if (!isCorrect) markWrong(id, false);
   saveState();
@@ -814,10 +909,15 @@ function scrollToQuizResult() {
   });
 }
 
-function markWrong(id, shouldRender = true) {
+function markWrong(id, shouldRender = true, incrementWrongCount = true) {
   const q = byId.get(id);
+  const existing = state.mistakes[id] || {};
+  const currentWrongCount = getWrongCount(id);
+  const nextWrongCount = incrementWrongCount ? currentWrongCount + 1 : currentWrongCount;
   state.mistakes[id] = {
-    count: (state.mistakes[id]?.count || 0) + 1,
+    ...existing,
+    count: nextWrongCount,
+    wrongCount: nextWrongCount,
     paper: q.paper,
     chapter: q.chapter,
     updatedAt: new Date().toISOString(),
@@ -884,7 +984,7 @@ function renderMistakes() {
         <article class="list-item">
           <h3>${escapeHtml(q.id)} ${escapeHtml(t(q, "question"))}</h3>
           <div class="meta">
-            <span class="pill">错 ${state.mistakes[q.id].count} 次</span>
+            <span class="pill">错了 ${getWrongCount(q.id)} 次</span>
             <span class="pill">${q.paper} 第${q.chapter}章</span>
           </div>
           <div class="button-row">

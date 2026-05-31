@@ -572,6 +572,35 @@ button {
   white-space: nowrap;
 }
 
+.practice-resume-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  background: rgba(23, 32, 51, 0.42);
+}
+
+.practice-resume-panel {
+  width: min(420px, 100%);
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: var(--shadow);
+}
+
+.practice-resume-panel h2 {
+  margin: 0;
+  font-size: 18px;
+  line-height: 1.45;
+}
+
+.practice-resume-panel .button-row {
+  margin-top: 16px;
+}
+
 .filters {
   display: grid;
   gap: 10px;
@@ -692,6 +721,13 @@ button {
 .result-box h3 {
   margin: 0 0 8px;
   font-size: 16px;
+}
+
+.wrong-count-note {
+  margin: 0 0 10px;
+  color: var(--red);
+  font-size: 14px;
+  font-weight: 750;
 }
 
 .explanation-header {
