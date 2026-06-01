@@ -1,0 +1,78 @@
+# Full Explanation Batch 11 Manual Audit
+
+Updated: 2026-06-01
+
+Audit scope: 60 P1 Chapter 4 operational-function questions.
+
+Manual audit result:
+- 60 approved for `simple_explanation` rewrite.
+- 0 excluded after manual audit.
+- No selected ID is from Batch 1-10, explicit exclusions, or Do Not Auto registry.
+- Combination / negative / all-of-above items are only included where current JSON and `original_explanation` are sufficient.
+- Field permission: rewrite `simple_explanation` only.
+
+Protected fields that must remain unchanged:
+- `original_explanation`, question text, options, `correct_answer`, `source_page`, `reference`, chapter/section fields, metadata.
+
+| ID | Paper | chapter/section | Answer | Question | Correct option | Audit note |
+|---|---|---|---|---|---|---|
+| `P1-859` | P1 | 4/4.1 | D | 产品开发对保险公司来说很重要，原因是： | 以上各项不正确 | negative handled, all-of-above handled |
+| `P1-860` | P1 | 4/4.2 | A | 客户服务部若以职能界定来说也称为: | 顾客服务部 | ordinary |
+| `P1-861` | P1 | 4/4.2 | D | 下列哪项不太可能是客户服务的职责？ | 索偿的谈判 | negative handled |
+| `P1-862` | P1 | 4/4.2 | B | 投诉、联络、提供文件及公共关系的职务属于哪个部门负责？ | 客户服务部 | ordinary |
+| `P1-863` | P1 | 4/4.2 | B | 以下哪项属于客户服务部的职能范围? i 联络 ii 公共关系 iii 赔偿的谈判 iv 处理投诉 | i, ii, iv | combo handled |
+| `P1-865` | P1 | 4/4.2 | D | 为何「客户服务」这么重要? | 以上各项皆是 | all-of-above handled |
+| `P1-866` | P1 | 4/4.2 | D | 投诉是客户服务的重要职责之一。为何处理投诉这么重要？ | 以上所有理由 | all-of-above handled |
+| `P1-867` | P1 | 4/4.2 | D | 顾客服务部处理投诉必须及迅速地予以处理，假若处理得不好会有以 下甚么影响？ | 以上各项皆是 | all-of-above handled |
+| `P1-868` | P1 | 4/4.3 | D | 以下哪项是市场行销及促销部的职能? | 以上各项皆是 | all-of-above handled |
+| `P1-869` | P1 | 4/4.3 | D | 对于公共关系、赞助及广告是属于下列哪个部门的职务? | 市场行销及促销部门 | ordinary |
+| `P1-870` | P1 | 4/4.3 | D | 以下哪项并非市场行销及促销部的职责? | 以上各项皆是其职责 | negative handled, all-of-above handled |
+| `P1-871` | P1 | 4/4.3 | B | 一家典型保险公司的公共关系部负责处理颇多类型的事务，下列哪项 则不属于它的范围之内? | 参与繁多的产品研究 | negative handled |
+| `P1-873` | P1 | 4/4.3 | D | 广告是很重要的环节，促销及行销的广告职能是: | 以上各项皆是 | all-of-above handled |
+| `P1-875` | P1 | 4/4.3 | B | 市场行销部不断地监察当前及潜在的市场，这过程称为: | 市场调查 | ordinary |
+| `P1-876` | P1 | 4/4.4 | B | 以下哪项不太可能是保险销售部的职能？ | 索偿个案的调查 | negative handled |
+| `P1-877` | P1 | 4/4.4 | D | 保险销售的工作是／下列哪项或哪些较可能属于保险销售部的工作范 围／保险销售需与各部门联系，以下哪... | 以上各项皆是 | combo handled, all-of-above handled |
+| `P1-878` | P1 | 4/4.4 | A | 保险销售部门较有可能与以下哪个部门的联系最为密切？ | 市场行销（市场推广）部门 | ordinary |
+| `P1-881` | P1 | 4/4.5 | D | 以下哪项或哪些有可能包括在给涉及核保风险之员工的指引和指示内 ? | 以上所有各项 | combo handled, all-of-above handled |
+| `P1-882` | P1 | 4/4.5 | D | 以下哪项有关核保的陈述是不正确? | 于人寿保险中，是一种每年进行一次的过程／每年重复的过程 | negative handled |
+| `P1-884` | P1 | 4/4.5 | D | 以下哪项属于核保部门的职能? | 以上各项皆是 | all-of-above handled |
+| `P1-885` | P1 | 4/4.5 | D | 以下哪项属于核保的范围? i 评估风险的可保性 ii 厘定可保风险的条款 iii 制备核保手册和... | i, ii, iii, iv | combo handled |
+| `P1-886` | P1 | 4/4.5 | D | 以下哪项不大可能属于核保部门的职能范围? | 处理涉及索偿的投诉 | negative handled |
+| `P1-890` | P1 | 4/4.5 | A | 一项保险，保险人于其后时间不能取消，而且只可对每项风险进行一 次核保，此保险为: | 人寿保险 | ordinary |
+| `P1-891` | P1 | 4/4.5 | B | 寿险保单核保工作尤为重要，以下哪项原因是正确的: | 保险人不能单方面取消保单 | ordinary |
+| `P1-892` | P1 | 4/4.5 | A | 为何人寿保单在核保过程中不能出现错误? | 因保险公司不能取消人寿保单，而且只可核保一次 | ordinary |
+| `P1-893` | P1 | 4/4.5 | B | 以下哪项或哪些陈述有关一般保险核保是正确的？ | 它们涉及保障类型多不胜数／广泛保障范围的考虑 | combo handled |
+| `P1-894` | P1 | 4/4.5 | C | 以下哪项不属于核保部门的工作? | 以集中形式处理一般保险的核保 | negative handled |
+| `P1-896` | P1 | 4/4.5 | D | 以下哪项是核保部门的工作范围？ | 以上各项皆是 | all-of-above handled |
+| `P1-898` | P1 | 4/4.5 | C | 一个形容保险人极之希望争取的寿险业务及极不想争取的非寿险业务 字眼为: | 目标风险 | ordinary |
+| `P1-899` | P1 | 4/4.5 | C | 非人寿保险的目标风险，很大可能是指以下那项风险？ | 保险人极不合意的业务 | ordinary |
+| `P1-901` | P1 | 4/4.5 | C | 非人寿保险的目标风险较可能是指何种风险？ | 保险人极不合意／喜欢的业务类型 | ordinary |
+| `P1-903` | P1 | 4/4.5 | D | 保险公司可以指示保险代理人，不要从事某些专业类别的业务，这些 指引可以包含在哪些文件中? | 拒绝名单 | ordinary |
+| `P1-904` | P1 | 4/4.5 | D | 保险代理人有时被通知那些不应鼓励，或应予拒绝的 业务可称为： | 拒绝名单 | ordinary |
+| `P1-905` | P1 | 4/4.5 | C | 当代理人委托人进行业务时，对于某些不鼓励或应拒绝的业务的一份 名单称之为: | 拒绝名单 | ordinary |
+| `P1-906` | P1 | 4/4.6 | B | 人寿保险是保单持有人的资产，由于有「期末利益」，保单持有人何 时享有此权益？ | 目前法律上已存在拥有权，但保单持有人并未完全 拥有处置权 | ordinary |
+| `P1-911` | P1 | 4/4.6 | D | 在保单中出现错误是非常严重的，因为: | 以上各项皆是 | all-of-above handled |
+| `P1-912` | P1 | 4/4.6 | D | 保单处理的工作是: | 以上各项皆是 | all-of-above handled |
+| `P1-913` | P1 | 4/4.6 | A | 对很多险种来说，通常在收到保费之前保障已经开始生效，但是，以 下哪业务种类几乎总是根据第一笔保费... | 人寿保险 | ordinary |
+| `P1-914` | P1 | 4/4.7 | B | 一般保险的理赔部门，不大考虑以下哪项? | 尚未偿还的贷款 | ordinary |
+| `P1-915` | P1 | 4/4.7 | C | 以下哪项不是一般业务的处理范围? | 计算及处理保单抵押贷款 | negative handled |
+| `P1-918` | P1 | 4/4.7 | D | 在处理死亡索偿时，有些要特别注意的地方，包括 赔偿利益及： | 以上所有各项 | all-of-above handled |
+| `P1-919` | P1 | 4/4.7 | D | 以下哪项不是一般保险理赔的范围? | 处理未清偿的贷款 | negative handled |
+| `P1-920` | P1 | 4/4.7 | A | 以下哪项不是人寿保险理赔部所考虑的范围? | 退休策划 | negative handled |
+| `P1-921` | P1 | 4/4.7 | B | 如果理赔部门涉及复杂的保单贷款情况，保单的权益转让及现金红利/ 期末红利的计算，那么很明显地，它... | 人寿保险 | ordinary |
+| `P1-922` | P1 | 4/4.7 | D | 以下哪些可能对人寿保险理赔造成一定的影响? i 还未清偿的保费贷款 ii 与受益人有关的复杂事项... | i, ii, iii, iv | combo handled |
+| `P1-923` | P1 | 4/4.7 | D | 保险人之理赔部门，在处理人寿索赔时，不会考虑以下哪项或哪些事 务? | 核保的过程 | negative handled, combo handled |
+| `P1-925` | P1 | 4/4.7 | D | 人寿保险的理赔部门，不会处理： | 遗产策划 | negative handled |
+| `P1-927` | P1 | 4/4.7 | A | 以下哪项不是一般保险理赔的考虑? | 红利的考虑 | negative handled |
+| `P1-930` | P1 | 4/4.7 | B | 对于保险理赔，应注意的包括数额(索偿时的赔付)及: | 保险人对索偿人的法律责任 | ordinary |
+| `P1-932` | P1 | 4/4.7 | A | 大多数非人寿保险索偿中，保险人对赔款必须认真核实，在描述索偿 支付数目的术语称为: | 数额 | ordinary |
+| `P1-933` | P1 | 4/4.8 | D | 以下哪项有关再保险的陈述是正确的? | 保险人有时会利用再保险来减低变现风险，试想像发生 火灾后，于短时间内需要大量现金 | ordinary |
+| `P1-934` | P1 | 4/4.8 | B | 以下哪一项是有关再保险的正确描述？ | 保险人以再保险降低赔偿时的变现风险，尤其于重大事 故发生巨额赔偿时，保险人可能即时需... | ordinary |
+| `P1-936` | P1 | 4/4.8 | A | 如果保险人觉得他的潜在责任高得难以接受，他可能把自己的部份风 险向另外的保险人投保，这一过程称之... | 再保险 | ordinary |
+| `P1-937` | P1 | 4/4.8 | D | 以下哪项描述再保险是正确的? | 以上所列各项 | all-of-above handled |
+| `P1-938` | P1 | 4/4.8 | A | 以下哪三项属于再保险的功能? i 足够的再保险安排对保险人的财政稳健极为重要 ii 保险人安排再... | i, ii, iii | combo handled |
+| `P1-939` | P1 | 4/4.8 | D | 以下哪项有关再保险的陈述是正确的? | 保险通过一个或以上的保险合约，把他已经受保的风险 的部分或全部转移至另一保险人 | ordinary |
+| `P1-940` | P1 | 4/4.8 | B | 以下哪项对于再保险的描述是不正确的? | 要向在香港注册的公司购买 | negative handled |
+| `P1-944` | P1 | 4/4.9 | A | 虽然越发觉精算师参与所有不同类别保险的工作，然而他们最可能涉 及: | 人寿保险 | ordinary |
+| `P1-945` | P1 | 4/4.9 | D | 以下哪几项对精算支援的描述是正确的？ i 《保险业条例》要求所有保险人委任一名合资格并被 保险业... | ii, iii & iv | combo handled |
+| `P1-946` | P1 | 4/4.9 | B | 保险业条例要求所有从事长期业务的保险人，委派一名合资格的精算 师，并要求: | 对该保险人的所有资产及负债进行评估最少一年一次的 | ordinary |
