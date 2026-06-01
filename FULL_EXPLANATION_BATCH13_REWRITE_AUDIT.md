@@ -1,0 +1,182 @@
+# Full Explanation Batch 13 Rewrite Audit
+
+Updated: 2026-06-01
+
+## Write Summary
+
+- Written IDs: 150
+- P1: 115
+- P3: 35
+- Modified field: simple_explanation only
+- Skipped after rewrite plan: 0
+- Commit: not performed
+- Push: not performed
+
+## Validation Results
+
+- JSON parse: passed
+- Counts: P1=1391, P3=807, total=2198
+- ID continuity: passed for P1 and P3
+- Changed IDs: exactly 150 selected Batch 13 IDs
+- Non-simple_explanation field diffs: 0
+- Protected field changes: 0
+- Five-section structure: 150/150 passed
+- Do Not Auto / explicit exclusion hits: 0
+- Encoding check for Batch 13 simple_explanation and reports: 0 hits for the four-question-mark marker, replacement character, or mojibake marker
+
+## Written IDs
+
+- P1-277
+- P1-391
+- P1-398
+- P1-482
+- P1-521
+- P1-549
+- P1-584
+- P1-642
+- P1-751
+- P1-752
+- P1-753
+- P1-768
+- P1-784
+- P1-826
+- P1-827
+- P1-828
+- P1-832
+- P1-833
+- P1-843
+- P1-857
+- P1-909
+- P1-949
+- P1-961
+- P1-962
+- P1-968
+- P1-970
+- P1-972
+- P1-976
+- P1-982
+- P1-985
+- P1-986
+- P1-1012
+- P1-1031
+- P1-1032
+- P1-1035
+- P1-1046
+- P1-1049
+- P1-1050
+- P1-1052
+- P1-1056
+- P1-1058
+- P1-1060
+- P1-1061
+- P1-1063
+- P1-1064
+- P1-1066
+- P1-1067
+- P1-1068
+- P1-1072
+- P1-1073
+- P1-1074
+- P1-1077
+- P1-1078
+- P1-1081
+- P1-1082
+- P1-1083
+- P1-1087
+- P1-1089
+- P1-1093
+- P1-1094
+- P1-1097
+- P1-1098
+- P1-1101
+- P1-1102
+- P1-1103
+- P1-1116
+- P1-1117
+- P1-1120
+- P1-1121
+- P1-1123
+- P1-1124
+- P1-1125
+- P1-1127
+- P1-1141
+- P1-1145
+- P1-1146
+- P1-1147
+- P1-1149
+- P1-1156
+- P1-1159
+- P1-1161
+- P1-1222
+- P1-1227
+- P1-1229
+- P1-1230
+- P1-1231
+- P1-1232
+- P1-1233
+- P1-1236
+- P1-1237
+- P1-1238
+- P1-1240
+- P1-1260
+- P1-1261
+- P1-1296
+- P1-1299
+- P1-1302
+- P1-1310
+- P1-1315
+- P1-1318
+- P1-1334
+- P1-1335
+- P1-1343
+- P1-1345
+- P1-1348
+- P1-1359
+- P1-1360
+- P1-1361
+- P1-1370
+- P1-1371
+- P1-1372
+- P1-1380
+- P1-1381
+- P1-1382
+- P1-1385
+- P3-072
+- P3-108
+- P3-109
+- P3-110
+- P3-112
+- P3-115
+- P3-116
+- P3-117
+- P3-118
+- P3-120
+- P3-121
+- P3-122
+- P3-125
+- P3-318
+- P3-358
+- P3-366
+- P3-370
+- P3-374
+- P3-406
+- P3-470
+- P3-529
+- P3-560
+- P3-649
+- P3-651
+- P3-666
+- P3-667
+- P3-673
+- P3-675
+- P3-683
+- P3-690
+- P3-700
+- P3-701
+- P3-753
+- P3-770
+- P3-796
+
+## Field-Level Boundary
+
+No edits were made to original_explanation, question text, options, correct_answer, source_page, reference, chapter, section, UI files, README, extract_questions.py, PDFs, offline version, or sharedFiles.
