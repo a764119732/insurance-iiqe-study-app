@@ -1,0 +1,89 @@
+# Full Explanation Batch 3 Rewrite Audit
+
+Updated: 2026-05-31
+
+Scope: 60 ordinary low-risk template questions. This batch rewrites only `simple_explanation`.
+
+## Rewrite Audit
+
+Actual changed `simple_explanation` IDs: 60.
+Protected field comparison: passed.
+JSON parse: passed.
+Question counts: P1=1391, P3=807, total=2198.
+ID continuity: passed.
+Changed field scope: selected IDs' `simple_explanation` only.
+Five-section structure: 60/60 passed.
+Encoding check: passed for JSON and Batch 3 reports after repairing the rewrite-plan heading encoding.
+Do Not Auto / manual exclusion overlap: 0.
+Spotcheck: 18/60 (30%) keep, 0 repair, 0 manual confirmation.
+
+Before SHA256 from HEAD:
+- P1: `7A42C4A277E8AD6734B456B5CE8B68B90ED6F8A531555447CE1C1C4B31EFF981`
+- P3: `F7A8A4C1663B901C283D87281C45C497EF6E98F38719F298834D90308A6DF2A9`
+
+After SHA256:
+- P1: `F761E5BE53AB8E31F26F72B4DCFEEBC29893F4C2757A8C4DB8699440373F6FE9`
+- P3: `462AF0791EE0D349C074053C5A3C887E2A94D4B4D764F6AFF01702928F8B0169`
+
+| ID | Paper | chapter/section | Answer | Question | Correct option | Verdict |
+|---|---|---|---|---|---|---|
+| `P1-008` | P1 | 1/1.1 | A | 在不同的情况下，有一相同词语来形容造成损失的原因、承保的财物 或人身、所保风险，这一词语是： | 风险 | rewritten and validated |
+| `P1-009` | P1 | 1/1.1 | A | 有一相同词语来形容造成损失的原因、承保的财物或人身，这一词语 是： | 风险 | rewritten and validated |
+| `P1-027` | P1 | 1/1.1 | B | 如果从风险的财务后果作分类，它可分为： | 纯粹风险／纯风险和投机风险 | rewritten and validated |
+| `P1-028` | P1 | 1/1.1 | C | 「纯粹风险」/ 「纯风险」的定义： | 一项只有损失而不具收益的风险 | rewritten and validated |
+| `P1-030` | P1 | 1/1.1 | B | 以下哪一项描述纯粹风险／纯风险最为恰当？ | 一个只有损失而不具收益可能的风险 | rewritten and validated |
+| `P1-032` | P1 | 1/1.1 | C | 以下哪项正确地描述纯粹风险／纯风险？ | 可保性相对于投机风险为高 | rewritten and validated |
+| `P1-049` | P1 | 1/1.1 | A | 如果从风险的影响和原因作分类，它可分为基本风险和： | 特定风险 | rewritten and validated |
+| `P1-050` | P1 | 1/1.1 | C | 以下哪类风险的影响是有限的(并非广泛的)？ | 特定风险 | rewritten and validated |
+| `P1-052` | P1 | 1/1.1 | B | 以下哪项描述最适用于特定风险： | 一项造成相对有限后果的风险 | rewritten and validated |
+| `P1-058` | P1 | 1/1.1 | D | 以下哪项是基本风险在香港情况的描述？ | 它相当可能是不受保的 | rewritten and validated |
+| `P1-060` | P1 | 1/1.1 | D | 以下哪项正确地描述「基本风险」？ | 它相当可能是不可保的 | rewritten and validated |
+| `P1-061` | P1 | 1/1.1 | C | 以下哪项为「基本风险」而非「特定风险」的类别？ | 战事 | rewritten and validated |
+| `P1-073` | P1 | 1/1.1 | D | 以下哪项是对有关「风险管理」一词的描述是正确的？ | 它包含风险的认别与应付 | rewritten and validated |
+| `P1-087` | P1 | 1/1.1 | C | 以下哪项是对有关「风险管理」一词的描述是正确的？ | 它涉及风险的识别 | rewritten and validated |
+| `P1-088` | P1 | 1/1.1 | B | 如果风险被视为独立的知识及研究学科，风险管理一词经常被提及或 应用，当保险人应用风险管理时： | 较为著重降低或改善承保的风险 | rewritten and validated |
+| `P1-089` | P1 | 1/1.1 | B | 如果风险被视为独立的知识及研究学科，风险管理一词经常被提及或 应用，当保险人应用风险管理时： | 较为著重减低风险 | rewritten and validated |
+| `P1-097` | P1 | 1/1.1 | A | 在独立的研究和实务范畴，风险管理涉及： | 主要是纯粹风险／纯风险 | rewritten and validated |
+| `P1-103` | P1 | 1/1.1 | A | 作为一个独立的研究及实务范畴，风险管理涉及： | 一切类型的风险 | rewritten and validated |
+| `P1-112` | P1 | 1/1.2 | C | 提供就业，损失防范，协助储蓄及投资，可分被形容为： | 是保险的辅助功能而非基本功能 | rewritten and validated |
+| `P1-118` | P1 | 1/1.2 | B | 向被保险人的受养人支付死亡保险金，可以称得上： | 人寿保险的一项基本好处 | rewritten and validated |
+| `P1-123` | P1 | 1/1.2 | A | 为损失作出财务上的补偿，可以怎样去理解? | 保险的基本功能 | rewritten and validated |
+| `P1-126` | P1 | 1/1.2 | A | 保险的基本功能是种风险转移机制，被保人通过支付＿＿，把个人的 潜在财务损失转移给保险人。 | 保险费 | rewritten and validated |
+| `P1-131` | P1 | 1/1.2 | B | 下列哪项是保险的辅助功能，并非基本功能？ | 损失控制 | rewritten and validated |
+| `P1-148` | P1 | 2/2.1 | B | 一个人在店舖内购买物件时，放下金钱并取走物件，过程中不发一 言，在这种情况下： | 以行为证明下订立了合约 | rewritten and validated |
+| `P1-149` | P1 | 2/2.1 | A | 从街头小贩购买报纸，付钱后完成交易，这是： | 行为推断的简单合约 | rewritten and validated |
+| `P1-150` | P1 | 2/2.1 | A | 从街头小贩拿走报纸表示购买，这是： | 行为推断的合约 | rewritten and validated |
+| `P1-154` | P1 | 2/2.1 | A | 一份有别于必须签署、盖章及递送的合约，其订立形式简单，有效 性不取决于特殊手续的为： | 简单合约 | rewritten and validated |
+| `P1-158` | P1 | 2/2.1 | A | 在香港，保险合约属于： | 简单合约 | rewritten and validated |
+| `P1-159` | P1 | 2/2.1 | A | 大部分的保险合约属于： | 简单合约 | rewritten and validated |
+| `P1-161` | P1 | 2/2.1 | B | 以下哪项是正确的描述? | 保单一般都是简单合约，即可以口头、不经盖章的书面或从 行为判断出来 | rewritten and validated |
+| `P1-169` | P1 | 2/2.1 | A | 「简单合约」： | 有效性并不取决于特殊的手续 | rewritten and validated |
+| `P1-171` | P1 | 2/2.1 | B | 以下哪项最能描述保险单？ | 属于保险人与被保险人之间的合约 | rewritten and validated |
+| `P1-172` | P1 | 2/2.1 | A | 保险合约通常属于哪一类合约？ | 简单 | rewritten and validated |
+| `P1-175` | P1 | 2/2.1 | C | 保单在执行上往往以甚么形式出现? | 书面 | rewritten and validated |
+| `P1-176` | P1 | 2/2.1 | B | 保险合约通常属于哪一类型式？ | 通常是简单合约 | rewritten and validated |
+| `P1-178` | P1 | 2/2.1 | D | 「简单合约」： | 并不取决于特殊的手续 | rewritten and validated |
+| `P1-179` | P1 | 2/2.1 | D | 经签署、盖章和交付的书面文件，这是 | 契据 | rewritten and validated |
+| `P1-183` | P1 | 2/2.1 | B | 保险的担保／保险公司发出的担保属于以下哪类合约？ | 契据 | rewritten and validated |
+| `P1-190` | P1 | 2/2.1 | A | 要成立任何合约，其要约： | 必须按其原有内容而被承约 | rewritten and validated |
+| `P1-191` | P1 | 2/2.1 | B | 在一份建议合约上的要约对象称为 : | 受要约人 | rewritten and validated |
+| `P1-192` | P1 | 2/2.1 | C | 一位用建议书作要约的人被称为： | 要约人 | rewritten and validated |
+| `P1-193` | P1 | 2/2.1 | B | 以下哪项有关保单的要约描述是正确的？ | 没有要约就没有合约 | rewritten and validated |
+| `P1-194` | P1 | 2/2.1 | B | 以下哪项有关保单的要约描述是正确的？ | 没有要约就没有合约 | rewritten and validated |
+| `P1-195` | P1 | 2/2.1 | A | 以下哪项有关保单的要约描述是正确的？ | 没有要约就没有合约 | rewritten and validated |
+| `P1-196` | P1 | 2/2.1 | B | 以下哪项有关合约描述是正确的？ | 没有要约就没有合约 | rewritten and validated |
+| `P1-197` | P1 | 2/2.1 | A | 以下哪项有关合约描述是正确的？ | 没有要约就没有合约 | rewritten and validated |
+| `P1-198` | P1 | 2/2.1 | C | 如果保险人指出非相关的保险张期缩减为半年，否则不会接受某项 口头投保。那么，这项由保险人提出的建议可构成： | 反要约 | rewritten and validated |
+| `P1-200` | P1 | 2/2.1 | A | 在订立合约的过程中，「甲方」是提出要约的一方；即「要约人」 ，而「乙方」则是「受要约人」，如「乙方」不接受「甲方」的提 议，并作出反要约： | 「甲方」便成为「受要约人」 | rewritten and validated |
+| `P1-201` | P1 | 2/2.1 | A | 在订立合约的过程中，甲方(A)向乙方(B)要约合约，而(B)回答(A)要 修改当中的条款，这是 : | 反要约 | rewritten and validated |
+| `P1-203` | P1 | 2/2.1 | A | 要约如何能转变为一份有效协议？ | 以精确字句接纳原有的内容 | rewritten and validated |
+| `P1-209` | P1 | 2/2.1 | C | 苏先生在电话中要求一张机器全险保单，保险人承诺在一星期内发 出保单，电话对话完结一小时后，该等机器在火灾中被毁，请问有 否一个有效的机器全险保险合约承保是次火灾损失? | 有: 保险人一承诺发单，合约便订立了 | rewritten and validated |
+| `P1-211` | P1 | 2/2.1 | A | 一份属于简单合约的保险，其代价： | 必须由双方付出 | rewritten and validated |
+| `P1-215` | P1 | 2/2.1 | C | 温先生在电话要求一份机器全险保障，保险人承诺在一星期后发出 保单。电话对话一小时后，该组机器在火灾中被毁。请问有否一份 有效的机器全险保险合约承保是次火灾的损失？ | 有，保险人一承诺发出保单时，合约已订立生效 | rewritten and validated |
+| `P1-243` | P1 | 2/2.1 | B | 一份合约由于一些要求还未完成而令致有关合约无法执行，此称为 ： | 不能强制执行的合约 | rewritten and validated |
+| `P3-002` | P3 | 1/1.1 | D | 最初，人寿保险保单是： | 为期短，于特定期限内支付利益 | rewritten and validated |
+| `P3-020` | P3 | 1/1.1 | A | 下列哪项为寿险保单商业需求而非个人需求？ | 合伙人 | rewritten and validated |
+| `P3-103` | P3 | 1/1.3 | D | 厘定保险公司的保费其中一个主要因为是公平的，在这个大前提下， 这意味著: | 是公正的，不偏不倚对保单持有人 | rewritten and validated |
+| `P3-104` | P3 | 1/1.3 | C | 根据传统寿险保费计算方法，保费应可应付有关成本，并可反应有关 之风险。描述有关之保费标准为： | 充足及公平(公正)的 | rewritten and validated |
+| `P3-105` | P3 | 1/1.3 | B | 寿险保费的其一个标准是包括「公平」。意思是： | 反映有关的风险及约定利益 | rewritten and validated |
+| `P3-106` | P3 | 1/1.3 | B | 在厘定人寿保费的传统标准中，其中一项是「公平」，而另一项则是 ： | 充足的 | rewritten and validated |
