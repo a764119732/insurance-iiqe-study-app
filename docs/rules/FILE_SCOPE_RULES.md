@@ -1,5 +1,13 @@
 # File Scope Rules
 
+## Project-level Scope
+
+Project-level highest permission applies only inside:
+
+`D:\Users\Leo\Desktop\codex\Insurance\insurance-iiqe-study-app`
+
+It does not authorize changes outside this Git repository.
+
 ## 可提交范围
 
 按用户授权和任务类型提交。
@@ -35,7 +43,10 @@ Evidence batch 可提交：
 - `__pycache__/`
 - `_vendor/`
 - 敏感凭证
+- browser secrets
 - 任何未获授权的用户文件
+
+默认不得提交或上传 PDF、offline HTML、`sharedFiles/`、`tmp/`、`__pycache__/`、`_vendor/`、敏感凭证、browser secrets 或 `PROJECT_A_MEMORY.md`。
 
 ## Local-only
 

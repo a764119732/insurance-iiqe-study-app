@@ -1,5 +1,36 @@
 # Project A Safety Rules
 
+## Project-level Highest Permission for Project A
+
+The user grants project-level highest permission inside this repository only:
+
+`D:\Users\Leo\Desktop\codex\Insurance\insurance-iiqe-study-app`
+
+This permission applies only to Project A files inside this Git repository.
+
+Allowed without asking again, if the task itself clearly requires it:
+
+1. Read any file inside this project repository.
+2. Create or edit Markdown project documents.
+3. Create temporary scripts for validation or controlled writing.
+4. Modify `data/paper1_questions.json` and `data/paper3_questions.json` only when the user task explicitly authorizes JSON writing or explanation rewriting.
+5. Run local validation commands.
+6. Run `git add` / `git commit` for files explicitly allowed by the task.
+7. Run `git push` to this exact remote only: `https://github.com/a764119732/insurance-iiqe-study-app.git`.
+8. Use elevated/local execution for project files when normal sandbox writes fail, provided the operation is still within the user-authorized task scope.
+
+Still forbidden unless separately confirmed:
+
+1. Modify files outside this repository.
+2. Delete directories or batch-delete files.
+3. Use dangerous recursive delete commands.
+4. Rewrite Git history, force push, rebase pushed commits, hard reset, or clean untracked files.
+5. Push to any remote other than `https://github.com/a764119732/insurance-iiqe-study-app.git`.
+6. Submit or upload PDF, offline HTML, `sharedFiles/`, `tmp/`, `__pycache__/`, `_vendor/`, sensitive credentials, browser secrets, or `PROJECT_A_MEMORY.md`.
+7. Modify protected question fields unless the user explicitly authorizes that exact field.
+8. Continue after validation failure.
+9. Hide or ignore failed checks.
+
 ## 默认只读
 
 - 默认只读检查，不主动修改、删除、覆盖、移动、重命名文件。
@@ -32,6 +63,8 @@
 - `section_title`
 - `original_explanation`
 
+Protected question fields also include question text, options, `correct_answer`, source page, reference, and chapter / section fields.
+
 ## 失败即停
 
 出现以下情况必须停止并汇报：
@@ -46,6 +79,8 @@
 - 证据不足、答案冲突、选项冲突、OCR 污染或法律边界不清。
 - 编码出现常见乱码标记、典型 mojibake 或明显中文丢失。
 - staged 文件异常。
+- 任何验证失败后，不进入下一批，不 commit，不 push。
+- 必须报告具体失败项和当前文件状态。
 
 ## 编码与凭证
 

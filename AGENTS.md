@@ -5,6 +5,7 @@
 - 默认使用中文回答，除非用户明确要求其他语言。
 - 新任务开始前先读取 `PROJECT_A_MEMORY.md`，再按任务类型读取 `docs/rules/*.md`。
 - 默认只读；只有用户明确授权的文件、题号、字段和操作才可写入。
+- 本仓库内的项目级最高权限见 `docs/rules/PROJECT_A_SAFETY_RULES.md` 和 `docs/rules/GIT_DEPLOYMENT_RULES.md`。
 - 写 JSON 必须限定到明确题号和明确字段；未列入范围的题目和字段不得改动。
 - `PROJECT_A_MEMORY.md` 是 local-only 记忆文件，不提交、不推送，除非用户明确授权。
 - 不上传、不提交 PDF、离线版、`sharedFiles/` 或其他禁止范围文件。
