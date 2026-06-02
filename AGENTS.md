@@ -20,6 +20,15 @@
 - Git / push：`docs/rules/GIT_DEPLOYMENT_RULES.md`
 - 文件范围：`docs/rules/FILE_SCOPE_RULES.md`
 
+## Repo Skills 索引
+
+- 恢复上下文：`project-a-recovery`
+- Evidence Audit：`project-a-evidence-audit`
+- JSON 写入：`project-a-evidence-rewrite`
+- 提交推送：`project-a-commit-push`
+- 解析风格：`project-a-explanation-style`
+- 安全校验：`project-a-safety-check`
+
 ## JSON 写入硬边界
 
 - 题库 JSON 只允许在用户授权的题号内修改授权字段。
