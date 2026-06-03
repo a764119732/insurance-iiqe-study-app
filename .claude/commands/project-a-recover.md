@@ -97,6 +97,7 @@ git ls-files -- '*.pdf' iiqe_offline_300.html
 - 不要自动进入下一个任务或批次。
 - 如果发现异常（JSON 有 diff、禁止文件被跟踪、分支不同步），先报告再等待用户指示。
 - 如果 `PROJECT_A_NEXT_ACTION.md` 不存在，输出"没有明确的下一步建议，请用户指定任务"。
+- **权限提示**：本命令中的所有检查均为只读操作（`git status`、`git diff`、`git log`、`Get-Content`、`ConvertFrom-Json`），按照 CLAUDE.md 权限规则可自动执行，无需逐条确认。
 
 ## 使用方式
 

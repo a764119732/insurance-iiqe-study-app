@@ -142,6 +142,7 @@ node -e "console.log('Manual check required: confirm written IDs do not overlap 
 - **任何一项失败即停止**，不得继续 commit/push。
 - 只读，不修改文件。
 - 不暂存，不 commit，不 push（由调用方决定后续操作）。
+- **权限提示**：本命令所有检查均为只读操作（`node -e` 只读解析、`git diff`、`git status`、编码扫描），按照 CLAUDE.md 权限规则可自动执行，无需逐条确认。
 
 ## 使用方式
 

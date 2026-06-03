@@ -113,6 +113,7 @@ UI 状态: <干净/有变更>
 - 不修改 PDF、离线版、`sharedFiles`。
 - `PROJECT_A_MEMORY.md`、`PROJECT_A_SESSION_LOG.md`、`PROJECT_A_NEXT_ACTION.md` 默认不提交。
 - 不要删除历史日志条目。
+- **权限提示**：本命令的只读检查（`git status`、`git diff`、`git log`、文件读取）按照 CLAUDE.md 权限规则可自动执行；写入交接文件的 `Edit`/`Write` 操作则需用户明确授权。
 
 ## 使用方式
 

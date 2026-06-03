@@ -92,3 +92,15 @@
 - Commit `a17c6d1`（rewrite plan）+ `5bbc808`（JSON write）已推送。
 - JSON/UI 干净，main 与 origin/main 对齐。
 - 仅未跟踪文件：`FULL_EXPLANATION_BATCH1_USER_ACCEPTANCE_CHECK.md`。
+
+---
+
+### [2026-06-03] Claude Code permission rules added
+
+- 在 `CLAUDE.md` 中新增"Claude Code 自动执行权限规则"章节，区分只读自动执行 vs 写入必须确认。
+- 允许自动执行：`git status` / `git diff` / `git log` / `node --check` / 只读 JSON parse / 只读搜索 / 只读文件读取。
+- 必须确认：修改 JSON / 修改 UI / 写入文件 / 删除文件 / `git add` / `git commit` / `git push` / `npm install`。
+- 更新 `project-a-recover.md`、`project-a-safety-check.md`、`project-a-session-close.md` 中添加权限提示。
+- 创建 `EVIDENCE_AUDIT_BATCH4_CANDIDATE_POOL.md`（888 题 → A+B 689，A 类 118）。
+- 未修改 JSON、UI、PDF、离线版、sharedFiles。
+- 未暂存、未 commit、未 push。

@@ -72,3 +72,13 @@
 当前下一步建议是 PROJECT_A_NEXT_ACTION.md 中的 Evidence Audit Batch 4。
 是否现在开始？
 ```
+
+---
+
+## 附：Claude Code 权限规则（2026-06-03 新增）
+
+参见 `CLAUDE.md` → "Claude Code 自动执行权限规则"：
+
+- 只读命令（`git status`、`git diff`、`git log`、`node --check`、只读 JSON parse 等）→ 自动执行
+- 写入命令（修改 JSON/UI、写文件、`git add`/`commit`/`push` 等）→ 必须用户确认
+- 新对话恢复用 `/project-a-recover` 无需逐条确认只读检查

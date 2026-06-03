@@ -10,6 +10,58 @@
 - 新对话开始时，先读取本文件、`AGENTS.md`、`PROJECT_A_MEMORY.md` 恢复上下文。
 - 所有修改必须先有 Markdown 计划、再有用户明确授权、再执行写入、再生成审计报告。
 
+## Claude Code 自动执行权限规则
+
+### 允许自动执行，不必反复询问的只读操作
+
+以下操作属于只读检查，可以直接执行，无需逐条确认：
+
+- `pwd` / `dir` / `ls` / `Get-ChildItem`
+- `Get-Content` / `Select-String` / `ConvertFrom-Json` / `Write-Output`
+- `git status` / `git status -sb` / `git diff` / `git diff --check`
+- `git log` / `git show` / `git branch` / `git rev-parse` / `git rev-list`
+- `git ls-files` / `git check-ignore`
+- `node --check app.js`
+- 只读 JSON parse / 题数统计 / ID 连续性检查 / 编码检查
+- 只读 grep / findstr / Select-String 搜索
+- 只读读取 `.md`、`.json`、`.js`、`.css`、`.html` 文件
+- `Measure-Object` / `Sort-Object` / `Where-Object` / `ForEach-Object`（只读管道）
+
+以上只读命令可以连续批量执行，减少打断用户。
+
+### 必须先问用户确认的操作
+
+以下操作必须停下来等待用户明确授权：
+
+- 修改任何 JSON 文件（`data/paper1_questions.json`、`data/paper3_questions.json`）
+- 修改 `app.js` / `style.css` / `index.html`
+- 写入、覆盖、追加任何文件（`Write` / `Edit` / `Out-File` / `Set-Content`）
+- 创建新文件，除非当前任务已明确授权创建该文件
+- 删除文件（`Remove-Item` / `del` / `rm` / `rmdir` / `rd`）
+- 移动文件 / 重命名文件 / 复制覆盖文件
+- `git add` / `git commit` / `git push` / `git reset` / `git checkout` / `git clean`
+- `npm install` / `pip install` / 安装依赖
+- 运行会写入文件的 `node` / `python` / `powershell` 脚本
+- 任何递归删除命令
+
+### 项目A核心安全规则
+
+- 默认只读。
+- 写 JSON 前必须有 Markdown plan。
+- 写 JSON 必须有用户明确授权。
+- 解释重写只允许修改 `simple_explanation`。
+- 禁止修改保护字段：`original_explanation`、`question_traditional` / `question_simplified`、`options_traditional` / `options_simplified`、`correct_answer`、`source_page`、`source_file`、`reference`、`chapter`、`section`。
+- UI 修改和 JSON 修改必须分开 commit。
+- `PROJECT_A_MEMORY.md` 默认本地维护，不提交。
+- `FULL_EXPLANATION_BATCH1_USER_ACCEPTANCE_CHECK.md` 默认不处理。
+- 每次写入后必须跑 safety check。
+- 每次任务结束建议运行 session-close 更新交接文件。
+
+### 当 Claude Code 弹出命令确认时
+
+- 只读检查命令（`Get-Content`、`git status`、`git diff`、`git log`、`node --check` 等）→ 建议选择 "Yes, and don't ask again"。
+- 涉及写入、删除、commit、push、reset、install 的命令 → 建议只选择单次确认，或先拒绝并回到计划确认。
+
 ## 项目路径
 
 ```
