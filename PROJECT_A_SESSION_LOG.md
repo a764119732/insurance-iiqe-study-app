@@ -181,6 +181,22 @@
 
 ---
 
+### [2026-06-04] Specificity Repair Batch 1 completed
+
+- First run of `/project-a-specificity-repair-auto`.
+- Scanned 1867 five-section → 1785 issues (96% have quality problems).
+- Selected 120 highest-priority (issueCount ≥ 3).
+- New 4-section: 1.考点 2.结论+解释 3.一一解释其他选项为什么错 4.记忆口诀.
+- JSON write: 120 (P1=93, P3=27), 0 skipped, 0 prot.
+- 4-section: 120/120, Generic count: 0, Encoding: 0.
+- Spotcheck: 36/36 keep (30%), generic_explanation_count = 0.
+- Commit `cd9a013` (plan) + `0015036` (repair) pushed.
+- Remaining issues: 1665. Next: Specificity Repair Batch 2.
+- 仅未跟踪文件：`FULL_EXPLANATION_BATCH1_USER_ACCEPTANCE_CHECK.md`。
+- 未暂存、未 commit、未 push。
+
+---
+
 ### [2026-06-04] Evidence Audit Batch 7 completed via batch-auto
 
 - Third run of `/project-a-evidence-batch-auto`.
