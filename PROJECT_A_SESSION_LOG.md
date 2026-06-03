@@ -133,4 +133,18 @@
 - 更新 `PROJECT_A_NEXT_ACTION.md` 推荐使用 batch-auto 启动 Batch 5。
 - 未修改 JSON、UI、PDF、离线版、sharedFiles。
 - 未暂存、未 commit、未 push。
+
+---
+
+### [2026-06-03] Evidence Audit Batch 5 completed via batch-auto
+
+- First run of `/project-a-evidence-batch-auto` closed-loop command.
+- Candidate pool: 593 A+B (A=81, B=512), C/D excluded.
+- Manual check: 200 (all allow_rewrite, 0 MC/DNA/defer).
+- Stage 4 ID count verification: ALL PASSED — header=explicit=200, P1=152, P3=48.
+- JSON write: 200 (P1=152, P3=48), 0 skipped, 0 protected violations.
+- Five-section: 200/200, encoding: 0, spotcheck: 60/60 keep.
+- Commit `02d3dfa` (plan) + `23f0d4e` (write) pushed.
+- Five-section coverage ~1610/2198 (73%).
+- Batch-auto command worked end-to-end without issues.
 - 仅未跟踪文件：`FULL_EXPLANATION_BATCH1_USER_ACCEPTANCE_CHECK.md`。
