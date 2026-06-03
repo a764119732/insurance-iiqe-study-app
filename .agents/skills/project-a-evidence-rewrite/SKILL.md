@@ -22,7 +22,8 @@ Use this skill only when the user explicitly authorizes JSON writing or explanat
    - `reference`
    - chapter / section fields
 6. Generate:
-   - `EVIDENCE_AUDIT_BATCHN_REWRITE_AUDIT.md`
+   - Use 4-section format from `project-a-explanation-style`: 1. 考点 2. 结论+解释 3. 一一解释其他选项为什么错 4. 记忆口诀
+- `EVIDENCE_AUDIT_BATCHN_REWRITE_AUDIT.md`
    - `EVIDENCE_AUDIT_BATCHN_REWRITE_SPOTCHECK.md`
 7. Run validation:
    - JSON parse

@@ -163,6 +163,40 @@
 
 ---
 
+### [2026-06-04] Specificity repair workflow added
+
+- User found many explanations structurally complete but too generic.
+- Updated explanation style to 4-section format:
+  1. 考点（白话+题型）
+  2. 结论+解释（为什么对）
+  3. 一一解释其他选项为什么错（逐项 A/B/C/D，禁止空泛句）
+  4. 记忆口诀（与本题具体相关，禁止万能句）
+- Created `.claude/commands/project-a-specificity-repair-auto.md` — 8-stage closed-loop repair.
+- Updated `.agents/skills/project-a-explanation-style/SKILL.md` with 4-section rules + needs_repair detection.
+- Updated `.agents/skills/project-a-evidence-rewrite/SKILL.md` to reference 4-section format.
+- Updated `CLAUDE.md` commands table.
+- Next action: Specificity Repair Batch 1 before Evidence Audit Batch 8.
+- 未修改 JSON、UI、PDF、离线版、sharedFiles。
+- 未暂存、未 commit、未 push。
+
+---
+
+### [2026-06-04] Evidence Audit Batch 7 completed via batch-auto
+
+- Third run of `/project-a-evidence-batch-auto`.
+- A exhausted. Stricter B-class audit: AR=135, MC=65, DNA=0.
+- Stage 4: PASSED (135=80+55).
+- JSON write: 135 (P1=80, P3=55), 0 skipped, 0 prot.
+- Five: 135/135, encoding: 0, spotcheck: 48/48 keep (36%).
+- Commit `a82de51` (plan) + `3843e90` (write) pushed.
+- Five-section coverage ~1884/2198 (~86%). Remaining: ~249.
+- 仅未跟踪文件：`FULL_EXPLANATION_BATCH1_USER_ACCEPTANCE_CHECK.md`。
+- Commit `1fd9ea3` (plan) + `5f672b9` (write) pushed.
+- Five-section coverage ~1749/2198 (~80%).
+- Remaining non-five-section: ~388.
+
+---
+
 ### [2026-06-04] Evidence Audit Batch 7 completed via batch-auto
 
 - Third run of `/project-a-evidence-batch-auto`.
