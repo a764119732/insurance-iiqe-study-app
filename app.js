@@ -15,6 +15,7 @@ let byId = new Map();
 let route = "home";
 let quizQueue = [];
 let quizIndex = 0;
+let quizJumpMessage = "";
 let activeExam = null;
 let examTimer = null;
 
@@ -245,6 +246,7 @@ function samePracticeScope(session, paper, mode, scopeKey) {
 function continuePracticeSession(existing) {
   quizQueue = [...existing.questionIds];
   quizIndex = existing.currentIndex;
+  quizJumpMessage = "";
   const answers = hydratePracticeSessionAnswers(existing);
   state.sessions.practice = {
     ...existing,
@@ -259,6 +261,7 @@ function continuePracticeSession(existing) {
 function beginPracticeSession({ paper, mode, scopeKey, validIds, startIndex = 0 }) {
   quizQueue = validIds;
   quizIndex = Math.min(Math.max(startIndex, 0), validIds.length - 1);
+  quizJumpMessage = "";
   state.sessions.practice = {
     paper,
     mode,
@@ -305,6 +308,7 @@ function startPracticeSession({ paper, mode, scopeKey, questionIds, startIndex =
   if (!validIds.length) {
     quizQueue = [];
     quizIndex = 0;
+    quizJumpMessage = "";
     state.sessions.practice = null;
     saveState();
     setRoute("quiz");
@@ -788,8 +792,9 @@ function renderQuiz() {
         <span class="pill">${q.id}</span>
         <span class="pill">${q.paper} 第${q.chapter}章 ${q.chapter_title}</span>
         ${q.is_hot_question ? '<span class="pill hot">热门</span>' : ""}
-        <span class="pill">${quizIndex + 1}/${quizQueue.length}</span>
+        <span class="pill">第 ${quizIndex + 1} / ${quizQueue.length} 题</span>
       </div>
+      ${renderQuestionJumpControl()}
       <h2 class="question-title">${escapeHtml(t(q, "question"))}</h2>
       <div class="option-list">
         ${"ABCD".split("").map((letter) => renderOption(q, letter, options[letter], answer)).join("")}
@@ -806,6 +811,28 @@ function renderQuiz() {
   `;
 }
 
+function renderQuestionJumpControl() {
+  const current = quizIndex + 1;
+  const total = quizQueue.length;
+  return `
+    <form class="question-jump" onsubmit="jumpToQuestion(event)" novalidate>
+      <label for="questionJumpInput">第 ${current} / ${total} 题</label>
+      <div class="question-jump-row">
+        <input
+          id="questionJumpInput"
+          type="text"
+          inputmode="numeric"
+          pattern="[0-9]*"
+          value="${current}"
+          aria-describedby="questionJumpMessage"
+        />
+        <button class="ghost-button" type="submit">跳转</button>
+      </div>
+      <p class="question-jump-message" id="questionJumpMessage" aria-live="polite">${escapeHtml(quizJumpMessage)}</p>
+    </form>
+  `;
+}
+
 function renderQuizStickyActions(q) {
   const favoriteLabel = state.favorites.includes(q.id) ? "取消收藏" : "收藏";
   return `
@@ -816,6 +843,40 @@ function renderQuizStickyActions(q) {
       <button class="button" onclick="nextQuestion()">下一题 / 继续练习</button>
     </div>
   `;
+}
+
+function jumpToQuestion(event) {
+  event.preventDefault();
+  const input = document.querySelector("#questionJumpInput");
+  const raw = String(input?.value || "").trim();
+  const total = quizQueue.length;
+  if (!/^\d+$/.test(raw)) {
+    quizJumpMessage = `请输入 1 到 ${total} 之间的题号。`;
+    renderQuiz();
+    focusQuestionJumpInput();
+    return;
+  }
+
+  const target = Number(raw);
+  if (!Number.isInteger(target) || target < 1 || target > total) {
+    quizJumpMessage = `请输入 1 到 ${total} 之间的题号。`;
+    renderQuiz();
+    focusQuestionJumpInput();
+    return;
+  }
+
+  quizJumpMessage = "";
+  quizIndex = target - 1;
+  persistPracticeSession();
+  renderQuiz();
+}
+
+function focusQuestionJumpInput() {
+  window.requestAnimationFrame(() => {
+    const input = document.querySelector("#questionJumpInput");
+    input?.focus();
+    input?.select();
+  });
 }
 
 function renderOption(q, letter, text, answer) {
@@ -877,6 +938,7 @@ function getExplanationStatus(simpleExplanation = "") {
 
 function chooseAnswer(id, selected) {
   const q = byId.get(id);
+  quizJumpMessage = "";
   const isCorrect = selected === q.correct_answer;
   const old = state.answers[id];
   const answerRecord = {
@@ -936,12 +998,14 @@ function toggleFavorite(id) {
 }
 
 function prevQuestion() {
+  quizJumpMessage = "";
   quizIndex = Math.max(0, quizIndex - 1);
   persistPracticeSession();
   renderQuiz();
 }
 
 function nextQuestion() {
+  quizJumpMessage = "";
   quizIndex = Math.min(quizQueue.length - 1, quizIndex + 1);
   persistPracticeSession();
   renderQuiz();
