@@ -160,4 +160,16 @@
 - Commit `1fd9ea3` (plan) + `5f672b9` (write) pushed.
 - Five-section coverage ~1749/2198 (~80%).
 - Remaining non-five-section: ~388.
+
+---
+
+### [2026-06-04] Evidence Audit Batch 7 completed via batch-auto
+
+- Third run of `/project-a-evidence-batch-auto`.
+- A exhausted. Stricter B-class audit: AR=135, MC=65, DNA=0.
+- Stage 4: PASSED (135=80+55).
+- JSON write: 135 (P1=80, P3=55), 0 skipped, 0 prot.
+- Five: 135/135, encoding: 0, spotcheck: 48/48 keep (36%).
+- Commit `a82de51` (plan) + `3843e90` (write) pushed.
+- Five-section coverage ~1884/2198 (~86%). Remaining: ~249.
 - 仅未跟踪文件：`FULL_EXPLANATION_BATCH1_USER_ACCEPTANCE_CHECK.md`。
