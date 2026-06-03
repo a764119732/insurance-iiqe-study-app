@@ -191,7 +191,18 @@
 - 4-section: 120/120, Generic count: 0, Encoding: 0.
 - Spotcheck: 36/36 keep (30%), generic_explanation_count = 0.
 - Commit `cd9a013` (plan) + `0015036` (repair) pushed.
-- Remaining issues: 1665. Next: Specificity Repair Batch 2.
+- Remaining issues: 1665 → 1546 after Batch 2. Next: Batch 3.
+
+---
+
+### [2026-06-04] Specificity Repair Batch 2 completed
+
+- Priority: 8 combination + 112 negation questions.
+- 4-section: 120/120, Generic: 0, CombFail(real): 0.
+- P3-481/P3-353: false-positive comb detection (OE has no i/ii/iii/iv).
+- Spotcheck: 42/120 (35%), 40 keep, 2 review (false-positive comb).
+- Commit `fbf4c61` (plan) + `2c4c3d9` (repair) pushed.
+- Remaining issues: 1546.
 
 ---
 
