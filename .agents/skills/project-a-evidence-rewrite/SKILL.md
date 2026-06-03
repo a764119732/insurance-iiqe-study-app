@@ -23,6 +23,7 @@ Use this skill only when the user explicitly authorizes JSON writing or explanat
    - chapter / section fields
 6. Generate:
    - Use 4-section format from `project-a-explanation-style`: 1. 考点 2. 结论+解释 3. 一一解释其他选项为什么错 4. 记忆口诀
+- **组合题特殊规则**：必须先逐项解释 i/ii/iii/iv，再解释 A/B/C/D。禁止在组合题里使用空泛句。
 - `EVIDENCE_AUDIT_BATCHN_REWRITE_AUDIT.md`
    - `EVIDENCE_AUDIT_BATCHN_REWRITE_SPOTCHECK.md`
 7. Run validation:

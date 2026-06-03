@@ -50,6 +50,8 @@
 - 写 JSON 前必须有 Markdown plan。
 - 写 JSON 必须有用户明确授权。
 - 解释重写只允许修改 `simple_explanation`。
+- 使用 4 段式格式：1. 考点 2. 结论+解释 3. 一一解释其他选项为什么错 4. 记忆口诀。
+- **组合题特殊规则**：必须先逐项解释 i/ii/iii/iv，再解释 A/B/C/D。禁止空泛句。
 - 禁止修改保护字段：`original_explanation`、`question_traditional` / `question_simplified`、`options_traditional` / `options_simplified`、`correct_answer`、`source_page`、`source_file`、`reference`、`chapter`、`section`。
 - UI 修改和 JSON 修改必须分开 commit。
 - `PROJECT_A_MEMORY.md` 默认本地维护，不提交。

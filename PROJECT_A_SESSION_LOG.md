@@ -192,6 +192,18 @@
 - Spotcheck: 36/36 keep (30%), generic_explanation_count = 0.
 - Commit `cd9a013` (plan) + `0015036` (repair) pushed.
 - Remaining issues: 1665. Next: Specificity Repair Batch 2.
+
+---
+
+### [2026-06-04] Combination question specificity rules added
+
+- Batch 1 spotcheck found combination question explanations still generic.
+- Added combination question (i/ii/iii/iv) special rules to explanation style.
+- Must explain each Roman numeral item FIRST, then explain A/B/C/D.
+- Banned generic phrases in combination questions: "概念/主体/范围不同", "不是正确组合" etc.
+- Updated 6 files: explanation-style SKILL, evidence-rewrite SKILL, specificity-repair-auto command, CLAUDE.md, NEXT_ACTION, SESSION_LOG.
+- 未修改 JSON、UI、PDF、离线版、sharedFiles。
+- 未暂存、未 commit、未 push。
 - 仅未跟踪文件：`FULL_EXPLANATION_BATCH1_USER_ACCEPTANCE_CHECK.md`。
 - 未暂存、未 commit、未 push。
 

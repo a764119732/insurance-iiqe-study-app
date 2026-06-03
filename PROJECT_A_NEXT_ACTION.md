@@ -1,5 +1,11 @@
 # Project A Next Action
 
+## 🔴 Specificity Repair Batch 1 发现组合题空泛问题
+
+Batch 1 spotcheck 发现组合题（含 i/ii/iii/iv）的解释仍存在空泛句。
+已更新组合题特殊规则：必须先逐项解释每个罗马数字项目，再解释 A/B/C/D。
+Batch 2 必须先解决组合题空泛问题再继续。
+
 ## Specificity Repair Batch 2
 
 ```text
