@@ -104,3 +104,20 @@
 - 创建 `EVIDENCE_AUDIT_BATCH4_CANDIDATE_POOL.md`（888 题 → A+B 689，A 类 118）。
 - 未修改 JSON、UI、PDF、离线版、sharedFiles。
 - 未暂存、未 commit、未 push。
+
+---
+
+### [2026-06-03] Evidence Audit Batch 4 completed, committed, and pushed
+
+- 创建候选池：888 剩余题 → 689 A+B（A=118, B=571）。
+- 只读审计 200 题（A 类 118 + B 类低风险 82）。
+- 审计结论：allow_rewrite 171, manual_confirm 17, do_not_auto 9。
+- 生成 rewrite plan（171 题，后修正表头 174→171）。
+- JSON 写入：171 题（P1=116, P3=55），仅 simple_explanation。
+- 保护字段变化 0，MC/DNA 变化 0，五段式 171/171，编码 0。
+- Spotcheck 52/171 (30%)：52 keep, 0 review。
+- 计数诊断：plan 表头 174 与显式列表 171 偏差（MC/DNA ID 混入），已修正。
+- 关键教训：Batch 5+ 写入前必须做 ID 计数一致性校验。
+- Commit `9e7de7c` 已推送，main 与 origin/main 对齐。
+- 累计五段式 ~1481 / 2198 (~67%)。
+- 仅未跟踪文件：`FULL_EXPLANATION_BATCH1_USER_ACCEPTANCE_CHECK.md`。
