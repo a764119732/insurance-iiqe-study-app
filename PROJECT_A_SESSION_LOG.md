@@ -147,4 +147,17 @@
 - Commit `02d3dfa` (plan) + `23f0d4e` (write) pushed.
 - Five-section coverage ~1610/2198 (73%).
 - Batch-auto command worked end-to-end without issues.
+
+---
+
+### [2026-06-03] Evidence Audit Batch 6 completed via batch-auto
+
+- Second run of `/project-a-evidence-batch-auto`.
+- A-class exhausted (0). All 200 from B-class with ≤1 risk factor.
+- AR=139, MC=61, DNA=0. Stage 4 ID verification: PASSED (139=47+92).
+- JSON write: 139 (P1=47, P3=92), 0 skipped, 0 protected violations.
+- Five: 139/139, encoding: 0, spotcheck: 42/42 keep (30%).
+- Commit `1fd9ea3` (plan) + `5f672b9` (write) pushed.
+- Five-section coverage ~1749/2198 (~80%).
+- Remaining non-five-section: ~388.
 - 仅未跟踪文件：`FULL_EXPLANATION_BATCH1_USER_ACCEPTANCE_CHECK.md`。
