@@ -74,3 +74,21 @@
 - 更新了 `.claude/commands/project-a-recover.md`（加入新文件读取和下一步建议输出）。
 - 未修改 JSON、UI、PDF、离线版或 sharedFiles。
 - 未暂存、未 commit、未 push。
+
+---
+
+### [2026-06-03] Evidence Audit Batch 3 completed, committed, and pushed
+
+- 从 A 类 119 题候选池中完成只读人工证据审计，生成 `EVIDENCE_AUDIT_BATCH3_MANUAL_CHECK.md`。
+- 审计结论：allow_rewrite 95（P1=41 + P3=54），manual_confirm 26，do_not_auto 0，defer 0。
+- 生成字段级重写计划 `EVIDENCE_AUDIT_BATCH3_REWRITE_PLAN.md`（修正后 95 题）。
+- 执行 JSON 写入：仅修改 95 题的 `simple_explanation`。
+- 保护字段变化：0。
+- manual_confirm/Do Not Auto 重叠：0。
+- 五段式完整性：95/95。
+- 编码检查：0 命中。
+- Spotcheck 29/95 (31%)：29 keep, 0 review。
+- 写入审计和 spotcheck 生成 `EVIDENCE_AUDIT_BATCH3_REWRITE_AUDIT.md` 和 `EVIDENCE_AUDIT_BATCH3_REWRITE_SPOTCHECK.md`。
+- Commit `a17c6d1`（rewrite plan）+ `5bbc808`（JSON write）已推送。
+- JSON/UI 干净，main 与 origin/main 对齐。
+- 仅未跟踪文件：`FULL_EXPLANATION_BATCH1_USER_ACCEPTANCE_CHECK.md`。

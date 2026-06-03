@@ -2,29 +2,36 @@
 
 ## 当前唯一推荐下一步
 
-### Evidence Audit Batch 3 Manual Check
+### Evidence Audit Batch 4 Candidate Pool / Manual Check
 
 | 项目 | 说明 |
 |------|------|
-| **任务** | 从 A 类候选题中抽取最多 100 题，逐题做只读人工证据审计 |
-| **输入文件** | `EVIDENCE_AUDIT_BATCH3_CANDIDATE_POOL.md` |
-| **候选范围** | **仅 A 类 119 题**（可进入人工证据审计） |
-| **输出文件** | `EVIDENCE_AUDIT_BATCH3_MANUAL_CHECK.md` |
+| **任务** | 从剩余非五段式题目中筛选 Batch 4 候选池，做只读人工证据审计 |
+| **输入文件** | `FULL_EXPLANATION_REMAINING_AUDIT_MAP.md`（剩余题全局地图） |
+| **候选范围** | Batch 3 未覆盖的剩余非五段式题（约 969 - 95 = 874 题中筛选） |
+| **输出文件** | `EVIDENCE_AUDIT_BATCH4_CANDIDATE_POOL.md` → `EVIDENCE_AUDIT_BATCH4_MANUAL_CHECK.md` |
+| **目标规模** | 150–200 题 manual check（提速） |
 
 ### 边界规则
 
 | 规则 | 说明 |
 |------|------|
-| 选题来源 | **只从 A 类选**，不碰 B 类 |
-| 选题上限 | 最多 100 题（可少于 100，根据 evidence 实际判断） |
-| 不处理 C 类 | 151 题 C 类禁止自动处理，不进入本轮 |
-| 不处理 D 类 | 152 题 D 类暂缓，不进入本轮 |
+| 选题来源 | 剩余非五段式题目，排除 Do Not Auto、已处理批次、五段式已覆盖 |
+| 选题上限 | 200 题（可含 A+B 类混合，B 类 OE 不足题可保留为 manual_confirm） |
+| 不处理 C/D 类 | 池外禁止自动处理 |
 | 不写 JSON | 只生成 Markdown 审计文件 |
 | 不改 UI | 不碰 `app.js` / `style.css` / `index.html` |
-| 不 commit | 不暂存、不提交 |
-| 不 push | 不推送 |
+| 不 commit | 不暂存、不提交（除非用户明确要求） |
+| 不 push | 不推送（除非用户明确要求） |
 
-### 审计标准
+### Batch 3 遗留
+
+| 项目 | 数量 | 说明 |
+|------|:---:|------|
+| manual_confirm | 26 题 P3 | 可在 Batch 4 中重新评估（若证据改善） |
+| 主要为 P3 Ch2 系列 | 14 题 | OE 仅 7 字或为空，需教材原文确认 |
+
+### 审计标准（同 Batch 3）
 
 逐题检查以下项目：
 
@@ -46,9 +53,9 @@
 
 ### 完成后
 
-1. 生成 `EVIDENCE_AUDIT_BATCH3_MANUAL_CHECK.md`。
+1. 生成 `EVIDENCE_AUDIT_BATCH4_MANUAL_CHECK.md`。
 2. 输出审计摘要（各类数量、ID 清单）。
-3. **等待用户确认**是否生成 `EVIDENCE_AUDIT_BATCH3_REWRITE_PLAN.md`。
+3. **等待用户确认**是否生成 `EVIDENCE_AUDIT_BATCH4_REWRITE_PLAN.md`。
 4. **不要**自动进入 rewrite plan 或 JSON 写入。
 
 ### 恢复上下文指令
@@ -62,6 +69,6 @@
 然后：
 
 ```text
-当前下一步建议是 PROJECT_A_NEXT_ACTION.md 中的 Evidence Audit Batch 3 Manual Check。
+当前下一步建议是 PROJECT_A_NEXT_ACTION.md 中的 Evidence Audit Batch 4。
 是否现在开始？
 ```
