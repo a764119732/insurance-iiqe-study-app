@@ -121,3 +121,16 @@
 - Commit `9e7de7c` 已推送，main 与 origin/main 对齐。
 - 累计五段式 ~1481 / 2198 (~67%)。
 - 仅未跟踪文件：`FULL_EXPLANATION_BATCH1_USER_ACCEPTANCE_CHECK.md`。
+
+---
+
+### [2026-06-03] Added project-a-evidence-batch-auto command
+
+- 创建 `.claude/commands/project-a-evidence-batch-auto.md`。
+- 一键闭环：候选池 → manual check → rewrite plan → ID 计数校验 → JSON 写入 → audit/spotcheck → safety check → 自动 commit/push → session-close。
+- 10 阶段完整流程，含异常停机条件。
+- 更新 `CLAUDE.md` 命令表。
+- 更新 `PROJECT_A_NEXT_ACTION.md` 推荐使用 batch-auto 启动 Batch 5。
+- 未修改 JSON、UI、PDF、离线版、sharedFiles。
+- 未暂存、未 commit、未 push。
+- 仅未跟踪文件：`FULL_EXPLANATION_BATCH1_USER_ACCEPTANCE_CHECK.md`。

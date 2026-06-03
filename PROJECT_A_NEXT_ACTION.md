@@ -2,7 +2,35 @@
 
 ## 当前唯一推荐下一步
 
-### Evidence Audit Batch 5 Candidate Pool / Manual Check
+### Evidence Audit Batch 5 — 推荐使用一键闭环命令
+
+**首选方式**：使用 `/project-a-evidence-batch-auto` 一键执行完整流程。
+
+调用示例：
+
+```text
+/project-a-evidence-batch-auto
+
+Batch 5
+manual check: 200 题
+rewrite: 150-180 题
+授权自动提交推送: yes
+```
+
+或分阶段只读（不写 JSON）：
+
+```text
+/project-a-evidence-batch-auto
+
+Batch 5
+manual check: 200 题
+rewrite: 暂不写入
+授权自动提交推送: no
+```
+
+详细流程见 `.claude/commands/project-a-evidence-batch-auto.md`。
+
+### 传统方式：Evidence Audit Batch 5 分步执行
 
 | 项目 | 说明 |
 |------|------|
