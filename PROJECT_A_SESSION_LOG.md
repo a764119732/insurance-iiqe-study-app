@@ -1,3 +1,24 @@
+# Project A Session Log - Latest Entry
+
+## [2026-06-04] Specificity Repair Validation Batch 1 completed
+
+- Goal: validate v3 quality rules on a small 50-question batch before any larger specificity repair.
+- Commit A: acacf11 Add specificity repair validation batch 1 plan.
+- Commit B: abf6573 Validate specificity repair quality batch 1.
+- Created required validation artifacts: candidate scan, rewrite plan, ID index, rewrite audit, spotcheck.
+- JSON write: 50 simple_explanation updates only.
+- P1/P3 split: P1=32, P3=18.
+- Combination/all-items coverage: 14.
+- Reverse/exception coverage: 9.
+- Spotcheck: 22 sampled, all keep, repair_needed=0.
+- Safety checks passed: JSON parse, P1=1391, P3=807, total=2198, ID continuity, actual changed IDs exactly equal plan IDs, extra_changed_ids=0, only simple_explanation changed, protected fields=0.
+- v3 checks passed: simplified_chinese_check, no_source_reference_check, four_section_only_check, concrete_wrong_option_reason_check, no_generic_comparison_check.
+- combination_question_failure_count=0; generic_explanation_count=0; git diff --check passed; UI/README/extract_questions.py diff empty.
+- Not committed: PROJECT_A_MEMORY.md, .claude/settings.local.json, FULL_EXPLANATION_BATCH1_USER_ACCEPTANCE_CHECK.md.
+- Next: read validation batch 1 artifacts and decide whether to run Validation Batch 2 or a larger Specificity Repair Batch 3.
+
+---
+
 # Project A Session Log
 
 ## 用途
