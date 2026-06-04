@@ -23,7 +23,11 @@ Use this skill only when the user explicitly authorizes JSON writing or explanat
    - chapter / section fields
 6. Generate:
    - Use 4-section format from `project-a-explanation-style`: 1. 考点 2. 结论+解释 3. 一一解释其他选项为什么错 4. 记忆口诀
-- **组合题特殊规则**：必须先逐项解释 i/ii/iii/iv，再解释 A/B/C/D。禁止在组合题里使用空泛句。
+- **Strict 4-section only**：禁止第 5 段（"遇到类似题怎么快速判断"等）。
+- **Simplified Chinese only**：禁止繁体字。禁止"原始解析/教材第X章/1.1.2a"等教材引用。
+- **Concrete wrong-option reasons**：每个错误选项必须说具体错因，禁止"和正确答案不同"等空泛句。
+- **组合题特殊规则**：必须先逐项解释 i/ii/iii/iv，再解释 A/B/C/D。
+   - Spotcheck must include: `simplified_chinese_check`, `no_source_reference_check`, `four_section_only_check`, `concrete_wrong_option_reason_check`, `no_generic_comparison_check`.
 - `EVIDENCE_AUDIT_BATCHN_REWRITE_AUDIT.md`
    - `EVIDENCE_AUDIT_BATCHN_REWRITE_SPOTCHECK.md`
 7. Run validation:

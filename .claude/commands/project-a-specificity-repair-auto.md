@@ -74,24 +74,37 @@ description: 一键扫描并返修所有格式完整但内容空泛的 simple_ex
    - `2. 结论 + 解释` — 正确选项为什么对
    - `3. 一一解释其他选项为什么错` — A/B/C/D 逐项
    - `4. 记忆口诀` — 与本题具体相关
-3. **不允许** 5 段式旧格式。
-4. **不允许** 大段复制 original_explanation。
-5. **不允许** 空泛解释其他选项。
-6. **组合题特殊规则**：必须先逐项解释 i/ii/iii/iv 每个罗马数字项目，再解释 A/B/C/D。禁止在组合题中用空泛句。
-7. 依据不足 → 跳过并记录 skipped。
+3. **simple_explanation 必须统一简体中文**，禁止繁体字或繁简混用。
+4. **禁止教材引用式表达**，包括"原始解析"、"教材第几章第几节"、"1.1.2a"等。
+5. **必须严格 4 段式**：1. 考点；2. 结论 + 解释；3. 一一解释其他选项为什么错；4. 记忆口诀。
+6. **不允许** 5 段式旧格式，禁止第 5 段。
+7. **不允许** 大段复制 original_explanation。
+8. **每个错误选项必须有具体错因**，不允许空泛解释其他选项。
+9. **组合题特殊规则**：必须先逐项解释 i/ii/iii/iv 每个罗马数字项目，再解释 A/B/C/D。禁止在组合题中用空泛句。
+10. 依据不足 → 跳过并记录 skipped。
 
 ### 阶段 5：写入后质量审计
 
 创建 `SPECIFICITY_REPAIR_BATCH{R}_REWRITE_AUDIT.md` 和 `SPOTCHECK.md`。
 
-Spotcheck ≥ 30%，必须检查：
+Spotcheck ≥ 30%，必须检查以下 5 项质量指标，**任一失败则 generic_explanation_count > 0 并停止 commit**：
+
+| # | Check | Standard |
+|---|-------|----------|
+| 1 | `simplified_chinese_check` | 无繁体字，简体中文 |
+| 2 | `no_source_reference_check` | 无"原始解析/教材章節/编号" |
+| 3 | `four_section_only_check` | 只有 1-4 段，无第 5 段 |
+| 4 | `concrete_wrong_option_reason_check` | 每个错误选项有具体错因 |
+| 5 | `no_generic_comparison_check` | 无"和正确答案不同"等空泛句 |
+
+此外还必须检查：
 - 是否为 4 段式
 - 是否逐项解释其他选项
 - 是否解释反向题/例外题
 - 是否仍有原文搬运
-- 是否仍有空泛句
 - 记忆口诀是否具体
 - **generic_explanation_count 必须为 0**
+- **combination_question_failure_count 必须为 0**
 
 **如果 generic_explanation_count > 0，必须停止，不得 commit。**
 
@@ -113,6 +126,11 @@ Spotcheck ≥ 30%，必须检查：
 | 10 | 4 段式完整性 | 写入数/写入数 |
 | 11 | 逐项解释选项通过率 | 100% |
 | 11a | 组合题 i/ii/iii/iv 逐项解释 | 100% |
+| 11b | simplified_chinese_check | 0 繁体字 |
+| 11c | no_source_reference_check | 0 教材引用 |
+| 11d | four_section_only_check | 0 第5段 |
+| 11e | concrete_wrong_option_reason_check | 100% |
+| 11f | no_generic_comparison_check | 0 空泛句 |
 | 12 | generic_explanation_count | 0 |
 | 13 | git diff --check | 通过 |
 | 14 | UI/README 无 diff | 0 |

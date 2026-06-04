@@ -206,6 +206,36 @@
 
 ---
 
+### [2026-06-04] Quality rules v3: simplified Chinese, no textbook refs, concrete reasons
+
+- User spotcheck found 4 remaining issues after Batch 1/2 repairs.
+- Updated explanation style rules:
+  1. Simplified Chinese only in simple_explanation (no traditional characters).
+  2. No textbook/source references ("原始解析/教材第X章/1.1.2a").
+  3. Strict 4-section only (no 5th section like "遇到类似题怎么快速判断").
+  4. Concrete wrong-option reasons required (no "和正确答案不同/概念不同").
+  5. 5 new spotcheck criteria added: simplified_chinese, no_source_reference, four_section_only, concrete_wrong_option_reason, no_generic_comparison.
+- Updated 6 files: explanation-style SKILL, evidence-rewrite SKILL, specificity-repair-auto command, CLAUDE.md, NEXT_ACTION, SESSION_LOG.
+- Batch 3 paused until rules applied. Next: Specificity Repair Batch 3 with new criteria.
+- 未修改 JSON、UI、PDF、离线版、sharedFiles。
+- 未暂存、未 commit、未 push。
+
+---
+
+### [2026-06-04] Quality rules v3 gap fill before commit
+
+- Completed missing v3 rule coverage in handoff/rule files.
+- Explicit spotcheck names required for future repair batches:
+  - `simplified_chinese_check`
+  - `no_source_reference_check`
+  - `four_section_only_check`
+  - `concrete_wrong_option_reason_check`
+  - `no_generic_comparison_check`
+- Combination questions must explain i/ii/iii/iv item by item before explaining A/B/C/D combinations.
+- 未修改 JSON、UI、PDF、离线版、sharedFiles、extract_questions.py。
+
+---
+
 ### [2026-06-04] Combination question specificity rules added
 
 - Batch 1 spotcheck found combination question explanations still generic.

@@ -50,8 +50,11 @@
 - 写 JSON 前必须有 Markdown plan。
 - 写 JSON 必须有用户明确授权。
 - 解释重写只允许修改 `simple_explanation`。
-- 使用 4 段式格式：1. 考点 2. 结论+解释 3. 一一解释其他选项为什么错 4. 记忆口诀。
-- **组合题特殊规则**：必须先逐项解释 i/ii/iii/iv，再解释 A/B/C/D。禁止空泛句。
+- 使用 4 段式格式（严格 4 段，禁止第 5 段）：1. 考点 2. 结论+解释 3. 一一解释其他选项为什么错 4. 记忆口诀。
+- **简体中文**：simple_explanation 必须简体，禁止繁体字和教材引用（"原始解析/教材第X章/编号"）。
+- **具体错因**：每个错误选项必须说具体错因，禁止"和正确答案不同/概念不同"等空泛句。
+- **组合题特殊规则**：必须先逐项解释 i/ii/iii/iv，再解释 A/B/C/D。
+- Spotcheck 必须明确执行 5 个检查项：`simplified_chinese_check`、`no_source_reference_check`、`four_section_only_check`、`concrete_wrong_option_reason_check`、`no_generic_comparison_check`。
 - 禁止修改保护字段：`original_explanation`、`question_traditional` / `question_simplified`、`options_traditional` / `options_simplified`、`correct_answer`、`source_page`、`source_file`、`reference`、`chapter`、`section`。
 - UI 修改和 JSON 修改必须分开 commit。
 - `PROJECT_A_MEMORY.md` 默认本地维护，不提交。
