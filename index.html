@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="zh-Hans">
+<html lang="zh-Hans" data-theme="light">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -13,7 +13,10 @@
           <p class="eyebrow">香港保险中介人资格考试</p>
           <h1>IIQE 卷一 / 卷三刷题</h1>
         </div>
-        <button class="icon-button" id="themeRefresh" title="刷新题库">↻</button>
+        <div class="topbar-actions">
+          <button class="theme-toggle" id="themeToggle" type="button" title="白天用 Light，晚上用 Dark" aria-pressed="false">Light</button>
+          <button class="icon-button" id="themeRefresh" type="button" title="刷新题库">↻</button>
+        </div>
       </header>
 
       <main id="app" class="view"></main>

@@ -6,9 +6,11 @@ const DATA_FILES = {
 const STORAGE_NAMESPACE = "iiqeStudyApp:v1";
 const STORAGE_KEY = `${STORAGE_NAMESPACE}:state`;
 const LEGACY_STORAGE_KEY = "iiqe-study-state-v1";
+const THEME_STORAGE_KEY = "iiqeStudyApp:theme";
 const EXAM_DATE = new Date("2026-06-12T00:00:00+08:00");
 const app = document.querySelector("#app");
 const navItems = [...document.querySelectorAll(".nav-item")];
+const themeToggle = document.querySelector("#themeToggle");
 
 let questions = [];
 let byId = new Map();
@@ -91,6 +93,37 @@ function normalizeState(saved = {}) {
 
 function saveState() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+}
+
+function getSavedTheme() {
+  try {
+    const saved = localStorage.getItem(THEME_STORAGE_KEY);
+    return saved === "dark" || saved === "light" ? saved : "light";
+  } catch {
+    return "light";
+  }
+}
+
+function applyTheme(theme, { persist = true } = {}) {
+  const normalized = theme === "dark" ? "dark" : "light";
+  document.documentElement.dataset.theme = normalized;
+  if (themeToggle) {
+    const isDark = normalized === "dark";
+    themeToggle.textContent = isDark ? "Dark 模式" : "Light 模式";
+    themeToggle.setAttribute("aria-pressed", String(isDark));
+    themeToggle.title = isDark ? "当前夜间模式，点击切换到白天模式" : "当前白天模式，点击切换到夜间模式";
+  }
+  if (!persist) return;
+  try {
+    localStorage.setItem(THEME_STORAGE_KEY, normalized);
+  } catch {
+    // Theme switching should still work even if localStorage is unavailable.
+  }
+}
+
+function toggleTheme() {
+  const current = document.documentElement.dataset.theme === "dark" ? "dark" : "light";
+  applyTheme(current === "dark" ? "light" : "dark");
 }
 
 async function loadQuestions() {
@@ -1636,6 +1669,8 @@ function shuffle(items) {
 }
 
 navItems.forEach((item) => item.addEventListener("click", () => setRoute(item.dataset.route)));
+applyTheme(getSavedTheme(), { persist: false });
+themeToggle?.addEventListener("click", toggleTheme);
 document.querySelector("#themeRefresh").addEventListener("click", loadQuestions);
 window.addEventListener("beforeunload", () => {
   persistPracticeSession();
