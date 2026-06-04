@@ -78,16 +78,24 @@ description: 一键扫描并返修所有格式完整但内容空泛的 simple_ex
 4. **禁止教材引用式表达**，包括"原始解析"、"教材第几章第几节"、"1.1.2a"等。
 5. **必须严格 4 段式**：1. 考点；2. 结论 + 解释；3. 一一解释其他选项为什么错；4. 记忆口诀。
 6. **不允许** 5 段式旧格式，禁止第 5 段。
-7. **不允许** 大段复制 original_explanation。
-8. **每个错误选项必须有具体错因**，不允许空泛解释其他选项。
-9. **组合题特殊规则**：必须先逐项解释 i/ii/iii/iv 每个罗马数字项目，再解释 A/B/C/D。禁止在组合题中用空泛句。
-10. 依据不足 → 跳过并记录 skipped。
+7. **一级标题必须精确匹配**以下 4 个标题，不得改写、加入破折号或省略文字：
+   - `1. 考点`
+   - `2. 结论 + 解释`
+   - `3. 一一解释其他选项为什么错`
+   - `4. 记忆口诀`
+8. **第 3 段标题必须固定**为 `3. 一一解释其他选项为什么错`，禁止 `3. ——解释其他选项为什么错`、`3. 其他选项为什么不适合`、`3. 其他选项为什么错`、`3. 逐项解释` 等写法。
+9. **第 4 段标题必须固定**为 `4. 记忆口诀`，正文第一行不得再次重复"记忆口诀"四个字。
+10. 如需做题技巧，必须合并进第 4 段，禁止新增 `5. 快速判断`、`5. 做题技巧`、`5. 遇到类似题怎么快速判断`。
+11. **不允许** 大段复制 original_explanation。
+12. **每个错误选项必须有具体错因**，不允许空泛解释其他选项。
+13. **组合题特殊规则**：必须先逐项解释 i/ii/iii/iv 每个罗马数字项目，再解释 A/B/C/D。禁止在组合题中用空泛句。
+14. 依据不足 → 跳过并记录 skipped。
 
 ### 阶段 5：写入后质量审计
 
 创建 `SPECIFICITY_REPAIR_BATCH{R}_REWRITE_AUDIT.md` 和 `SPOTCHECK.md`。
 
-Spotcheck ≥ 30%，必须检查以下 5 项质量指标，**任一失败则 generic_explanation_count > 0 并停止 commit**：
+Spotcheck ≥ 30%，必须检查以下质量指标，**任一失败则 `generic_explanation_count > 0` 或 `format_failure_count > 0`，并停止 commit**：
 
 | # | Check | Standard |
 |---|-------|----------|
@@ -96,6 +104,11 @@ Spotcheck ≥ 30%，必须检查以下 5 项质量指标，**任一失败则 gen
 | 3 | `four_section_only_check` | 只有 1-4 段，无第 5 段 |
 | 4 | `concrete_wrong_option_reason_check` | 每个错误选项有具体错因 |
 | 5 | `no_generic_comparison_check` | 无"和正确答案不同"等空泛句 |
+| 6 | `exact_four_headings_check` | 一级标题严格只有 4 个固定标题 |
+| 7 | `no_duplicate_heading_check` | 正文中不重复一级标题 |
+| 8 | `no_fifth_section_check` | 不出现任何第 5 段 |
+| 9 | `section3_exact_title_check` | 第 3 段标题严格等于 `3. 一一解释其他选项为什么错` |
+| 10 | `section4_no_repeated_memory_title_check` | 第 4 段正文不再重复"记忆口诀" |
 
 此外还必须检查：
 - 是否为 4 段式
@@ -104,9 +117,10 @@ Spotcheck ≥ 30%，必须检查以下 5 项质量指标，**任一失败则 gen
 - 是否仍有原文搬运
 - 记忆口诀是否具体
 - **generic_explanation_count 必须为 0**
+- **format_failure_count 必须为 0**
 - **combination_question_failure_count 必须为 0**
 
-**如果 generic_explanation_count > 0，必须停止，不得 commit。**
+**如果 generic_explanation_count > 0 或 format_failure_count > 0，必须停止，不得 commit。**
 
 ### 阶段 6：完整 Safety Check
 
@@ -131,7 +145,13 @@ Spotcheck ≥ 30%，必须检查以下 5 项质量指标，**任一失败则 gen
 | 11d | four_section_only_check | 0 第5段 |
 | 11e | concrete_wrong_option_reason_check | 100% |
 | 11f | no_generic_comparison_check | 0 空泛句 |
+| 11g | exact_four_headings_check | 100% |
+| 11h | no_duplicate_heading_check | 0 重复标题 |
+| 11i | no_fifth_section_check | 0 第5段 |
+| 11j | section3_exact_title_check | 100% |
+| 11k | section4_no_repeated_memory_title_check | 0 重复"记忆口诀" |
 | 12 | generic_explanation_count | 0 |
+| 12a | format_failure_count | 0 |
 | 13 | git diff --check | 通过 |
 | 14 | UI/README 无 diff | 0 |
 | 15 | git status 异常 | 无 |
@@ -168,6 +188,7 @@ Spotcheck ≥ 30%，必须检查以下 5 项质量指标，**任一失败则 gen
 | extra_changed_ids != 0 | 6 |
 | 保护字段变化 != 0 | 6 |
 | generic_explanation_count > 0 | 5,6 |
+| format_failure_count > 0 | 5,6 |
 | 编码污染 | 6 |
 | JSON parse 失败 | 6 |
 | push 失败 | 7 |

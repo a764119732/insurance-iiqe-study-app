@@ -281,6 +281,7 @@
 - Commit `a82de51` (plan) + `3843e90` (write) pushed.
 - Five-section coverage ~1884/2198 (~86%). Remaining: ~249.
 - 仅未跟踪文件：`FULL_EXPLANATION_BATCH1_USER_ACCEPTANCE_CHECK.md`。
+
 - Commit `1fd9ea3` (plan) + `5f672b9` (write) pushed.
 - Five-section coverage ~1749/2198 (~80%).
 - Remaining non-five-section: ~388.
@@ -297,3 +298,24 @@
 - Commit `a82de51` (plan) + `3843e90` (write) pushed.
 - Five-section coverage ~1884/2198 (~86%). Remaining: ~249.
 - 仅未跟踪文件：`FULL_EXPLANATION_BATCH1_USER_ACCEPTANCE_CHECK.md`。
+
+---
+
+### [2026-06-04] Stricter four-section formatting rules added
+
+- Added stricter four-section formatting rules.
+- Fixed rules for exact section headings and no duplicate memory-title line.
+- `simple_explanation` must use exactly four first-level numbered headings:
+  1. `1. 考点`
+  2. `2. 结论 + 解释`
+  3. `3. 一一解释其他选项为什么错`
+  4. `4. 记忆口诀`
+- Added required format checks:
+  - `exact_four_headings_check`
+  - `no_duplicate_heading_check`
+  - `no_fifth_section_check`
+  - `section3_exact_title_check`
+  - `section4_no_repeated_memory_title_check`
+- Any format failure must count toward `generic_explanation_count` or `format_failure_count`; stop and do not commit.
+- Next action: manually accept 10 questions from Validation Batch 1 before running Specificity Repair Batch 3. If accepted, keep Batch 3 at 100-120 questions first.
+- 未修改 JSON、UI、PDF、离线版、sharedFiles、extract_questions.py。

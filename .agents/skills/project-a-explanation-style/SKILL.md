@@ -16,10 +16,12 @@ Use the 4-section explanation format for `simple_explanation`.
 4. 记忆口诀
 ```
 
+`simple_explanation` 必须严格只有以上 4 个一级编号标题。一级标题必须逐字匹配，不得改写、增删标点、加入破折号，且不得出现第 5 个一级编号标题。
+
 **禁止出现第 5 段**，包括：
-- "遇到类似题怎么快速判断"
-- "快速判断"
-- "做题技巧"
+- "5. 遇到类似题怎么快速判断"
+- "5. 快速判断"
+- "5. 做题技巧"
 - 任何第 5 个段落标题
 
 如需做题技巧，合并进第 4 段记忆口诀。
@@ -69,6 +71,15 @@ Use the 4-section explanation format for `simple_explanation`.
 
 ### 3. 一一解释其他选项为什么错
 
+第 3 段标题必须固定为：`3. 一一解释其他选项为什么错`。
+
+禁止以下标题写法：
+- `3. ——解释其他选项为什么错`
+- `3. 其他选项为什么不适合`
+- `3. 其他选项为什么错`
+- `3. 逐项解释`
+- 任何带破折号或不完整标题的写法
+
 - 必须逐项解释未选选项。
 - A/B/C/D 中每个非正确选项都必须有**具体**解释。
 
@@ -112,11 +123,29 @@ Use the 4-section explanation format for `simple_explanation`.
 
 ### 4. 记忆口诀
 
+第 4 段标题必须固定为：`4. 记忆口诀`。
+
 - 必须和本题知识点有关。
 - **不允许万能口诀。**
 - **不允许只写"看清题干""注意关键词"。**
 - 口诀要能帮助下次快速判断同类题。
 - 如需做题技巧，合并在本段。
+- 正文中不要再次重复"记忆口诀"四个字。
+
+错误示例：
+
+```text
+4. 记忆口诀
+记忆口诀
+xxxx
+```
+
+正确示例：
+
+```text
+4. 记忆口诀
+xxxx
+```
 
 ## "Needs Repair" Detection
 
@@ -136,10 +165,12 @@ Any `simple_explanation` hitting any of these is marked `needs_repair`:
 12. 出现"原始解析""教材第X章""1.1.2a"等教材引用式表达。
 13. 出现第 5 段。
 14. 选项解释为"和正确答案不同/概念不同"等空泛句。
+15. 一级标题不是严格 4 个，或第 3 / 第 4 段标题不是固定标题。
+16. 第 4 段正文再次重复"记忆口诀"标题。
 
 ## Spotcheck Quality Criteria
 
-写入后 spotcheck 必须检查以下 5 项，任一失败则 `generic_explanation_count > 0` 并停止 commit：
+写入后 spotcheck 必须检查以下质量项，任一失败则计入 `generic_explanation_count` 或 `format_failure_count`，并停止 commit：
 
 | # | Check | Standard |
 |---|-------|----------|
@@ -148,6 +179,16 @@ Any `simple_explanation` hitting any of these is marked `needs_repair`:
 | 3 | `four_section_only_check` | 只有 1-4 段，无第 5 段 |
 | 4 | `concrete_wrong_option_reason_check` | 每个错误选项有具体错因 |
 | 5 | `no_generic_comparison_check` | 无"和正确答案不同"等空泛句 |
+| 6 | `exact_four_headings_check` | 一级标题严格等于 1-4 固定标题 |
+| 7 | `no_duplicate_heading_check` | 正文不重复一级标题 |
+| 8 | `no_fifth_section_check` | 不出现任何 `5.` 一级段落 |
+| 9 | `section3_exact_title_check` | 第 3 段标题必须为 `3. 一一解释其他选项为什么错` |
+| 10 | `section4_no_repeated_memory_title_check` | 第 4 段正文不再重复"记忆口诀" |
+
+如果任一格式检查失败：
+- 必须计入 `generic_explanation_count` 或 `format_failure_count`。
+- 不得 commit。
+- 必须停止并汇报。
 
 ## Writing Rules (General)
 
@@ -160,3 +201,5 @@ Any `simple_explanation` hitting any of these is marked `needs_repair`:
 - For legal, regulatory, or institutional questions, rely on evidence audit. Do not invent rules.
 - Keep wording beginner-friendly, concrete, and reviewable.
 - Strict 4-section only. No 5th section.
+- Use exact section headings only:
+  `1. 考点`, `2. 结论 + 解释`, `3. 一一解释其他选项为什么错`, `4. 记忆口诀`.

@@ -13,7 +13,9 @@ Specificity Repair Validation Batch 1 已完成并验证通过。
 - Spotcheck：22 题，全部 keep，repair_needed=0
 - v3 五项检查全部通过，generic_explanation_count=0，combination_question_failure_count=0
 
-下一步建议：只读评估是否扩大到 Specificity Repair Validation Batch 2，暂不直接写 JSON。
+下一步建议：先人工验收 Specificity Repair Validation Batch 1 的 10 道题，重点检查四段标题是否精确、是否无第 5 段、是否无重复"记忆口诀"标题。
+
+若肉眼验收通过，再执行 Specificity Repair Batch 3。Batch 3 目标先设 100-120 题，不要立刻扩大到 200。
 
 安全边界：不提交 PROJECT_A_MEMORY.md、.claude/settings.local.json、FULL_EXPLANATION_BATCH1_USER_ACCEPTANCE_CHECK.md；下一批仍必须先 plan 再写 JSON。
 
@@ -28,8 +30,10 @@ Specificity Repair Validation Batch 1 已完成并验证通过。
 2. "原始解析/教材第X章/1.1.2a"等教材引用式表达
 3. 第 3 段空泛（"和正确答案不同"）
 4. 仍出现第 5 段
+5. 第 3 段标题写成破折号或不完整标题
+6. 第 4 段正文重复"记忆口诀"标题
 
-**Rules updated 2026-06-04 with 5 new quality criteria. Batch 3 must pass all before commit.**
+**Rules updated 2026-06-04 with stricter four-section formatting criteria. Batch 3 must pass all before commit.**
 
 ## Specificity Repair Batch 3
 
@@ -37,7 +41,7 @@ Specificity Repair Validation Batch 1 已完成并验证通过。
 /project-a-specificity-repair-auto
 
 Specificity Repair Batch 3
-写入目标：120 题
+写入目标：100-120 题
 授权自动提交推送: yes
 ```
 
@@ -47,6 +51,11 @@ Specificity Repair Batch 3
 - four_section_only_check: 0 第5段
 - concrete_wrong_option_reason_check: 100%
 - no_generic_comparison_check: 0 空泛句
+- exact_four_headings_check: 100%
+- no_duplicate_heading_check: 0 重复标题
+- no_fifth_section_check: 0 第5段
+- section3_exact_title_check: 100%
+- section4_no_repeated_memory_title_check: 0 重复"记忆口诀"
 - 组合题必须先解释 i/ii/iii/iv 每个小项为什么对或错，再解释 A/B/C/D 组合为什么对或错。
 
 ## 累计进度
