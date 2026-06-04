@@ -121,6 +121,12 @@ Spotcheck ≥ 30%，必须检查以下质量指标，**任一失败则 `generic_
 | 11 | `section3_excludes_correct_answer_check` | 第 3 段只解释非正确选项 |
 | 12 | `no_internal_audit_note_check` | 用户可见解析无内部审计备注 |
 | 13 | `section4_single_memory_heading_check` | 第 4 段只出现一次 `4. 记忆口诀`，正文无单独一行"记忆口诀" |
+| 14 | `teaching_style_check` | 第 2 段因果解释（非模板句），第 3 段具体错因类型 |
+| 15 | `no_original_explanation_reference_check` | 无"贴合原始解析/命中原始解析/符合教材规则/符合题意" |
+| 16 | `concrete_option_reason_check` | 每个错误选项包含具体错因类型 |
+| 17 | `agency_relationship_check` | 代理类题正确区分委托人/代理人/第三方 |
+| 18 | `contract_privity_direction_check` | 合约相对性题正确识别为正向定义题 |
+| 19 | `no_empty_template_phrase_check` | 无"没有抓住核心判断点/只是相邻概念/不是本题要选的" |
 
 此外还必须检查：
 - 是否为 4 段式
@@ -168,6 +174,12 @@ Spotcheck ≥ 30%，必须检查以下质量指标，**任一失败则 `generic_
 | 11l | section3_excludes_correct_answer_check | 100% |
 | 11m | no_internal_audit_note_check | 0 内部备注 |
 | 11n | section4_single_memory_heading_check | 100% |
+| 11o | teaching_style_check | 100% |
+| 11p | no_original_explanation_reference_check | 0 模板句 |
+| 11q | concrete_option_reason_check | 100% |
+| 11r | agency_relationship_check | 100% |
+| 11s | contract_privity_direction_check | 100% |
+| 11t | no_empty_template_phrase_check | 0 空泛模板句 |
 | 12 | generic_explanation_count | 0 |
 | 12a | format_failure_count | 0 |
 | 13 | git diff --check | 通过 |

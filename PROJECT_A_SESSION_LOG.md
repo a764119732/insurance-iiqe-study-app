@@ -1,5 +1,17 @@
 # Project A Session Log - Latest Entry
 
+## [2026-06-04] 图三教学风格规则升级 + 合约相对性题小范围返修
+
+- 升级 4 个规则文件（CLAUDE.md、explanation-style SKILL、evidence-rewrite SKILL、specificity-repair-auto command），新增"图三教学风格"规则。
+- 新增 6 个 spotcheck 检查：teaching_style_check、no_original_explanation_reference_check、concrete_option_reason_check、agency_relationship_check、contract_privity_direction_check、no_empty_template_phrase_check。
+- 新增代理/委托/第三方类题和合约相对性类题的专门规则。
+- 新增生活化类比规则。
+- 修复 P1-244、P1-245：原误判为"反向题/例外题"，实际为正向定义题（合约相对性）。将 simple_explanation 重写为 4 段式正确解析。
+- P1-555 第 3 段标题已正确，跳过。
+- 新增 SMALL_REPAIR_CONTRACT_PRIVITY_AUDIT.md（待创建）。
+- 所有修改未暂存、未 commit、未 push。
+- JSON 安全：parse 通过、P1=1391/P3=807/Total=2198、ID 连续、仅 P1-244/P1-245 的 simple_explanation 变更、保护字段变化 0。
+
 ## [2026-06-04] Specificity Repair Validation Batch 1 completed
 
 - Goal: validate v3 quality rules on a small 50-question batch before any larger specificity repair.

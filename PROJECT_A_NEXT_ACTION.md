@@ -1,5 +1,12 @@
 # Project A Next Action - Current
 
+## [2026-06-04] 图三教学风格规则升级 + 合约相对性题返修
+
+已完成小范围规则升级和返修（未 commit）：
+- 新增"图三教学风格"规则到 CLAUDE.md 和 3 个 skill/command 文件。
+- 修复 P1-244、P1-245（合约相对性题）的误判为反向题的错误。
+- 两项修改均未暂存、未 commit、未 push，等待用户验收。
+
 ## Current Next Action After Validation Batch 1
 
 Specificity Repair Validation Batch 1 已完成并验证通过。

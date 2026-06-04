@@ -113,6 +113,11 @@ D:\Users\Leo\Desktop\codex\Insurance\insurance-iiqe-study-app
 - 禁止内部审计备注进入用户可见解析，包括"新增题待复核"、"待人工复核"、"先确认答案"、"教材依据待确认"、"rewrite_basis"、"risk_note"、"audit"、"spotcheck"。
 - 法律、监管、制度题必须先经过 Evidence Audit 人工证据审计，不得自由发挥。
 - 不修改题干、选项、`correct_answer`、`original_explanation`、来源字段。
+- **图三教学风格**：内容必须用白话讲清场景/概念，必要时加入简短生活化类比。第 2 段禁止写"贴合原始解析/命中原始解析/符合教材规则/符合题意/原文支持/这个选项最直接"，必须改成真正的因果解释。第 3 段禁止写"没有抓住核心判断点/只是相邻概念/不是本题要选的/和正确答案不同/不符合题意/概念/主体/范围不同"，每个选项必须说清具体错因（主体错/关系错/责任类型错/适用场景错/方向相反/漏掉关键条件/把两个概念混在一起）。
+- **代理/委托/第三方/销售合约**类题：必须分清委托人/代理人/第三方三方关系。代理人替委托人办事，法律效果归委托人。不能把代理人与第三方之间误说成代理合约。转承责任是雇主为雇员行为担责，不要误套到普通代理购物场景。
+- **合约相对性**类题：题干问"这是哪个法律原则"是正向定义题，不要误判为反向题。"第三者不是合约一方，因此没有责任履行合约条款"对应合约的相对性。必须说明合约权利义务只在当事人之间产生，不会自动加到第三者身上。
+- **生活化类比**：可以加入简短类比帮助理解，但不能太长，不能喧宾夺主。
+- Spotcheck 新增检查：`teaching_style_check`、`no_original_explanation_reference_check`、`concrete_option_reason_check`、`agency_relationship_check`、`contract_privity_direction_check`、`no_empty_template_phrase_check`。
 
 ## JSON 写入流程
 

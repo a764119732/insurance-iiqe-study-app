@@ -37,7 +37,11 @@ Use this skill only when the user explicitly authorizes JSON writing or explanat
 - **Simplified Chinese only**：禁止繁体字。禁止"原始解析/教材第X章/1.1.2a"等教材引用。
 - **Concrete wrong-option reasons**：每个错误选项必须说具体错因，禁止"和正确答案不同"等空泛句。
 - **组合题特殊规则**：必须先逐项解释 i/ii/iii/iv，再解释 A/B/C/D。
-   - Spotcheck must include: `simplified_chinese_check`, `no_source_reference_check`, `four_section_only_check`, `concrete_wrong_option_reason_check`, `no_generic_comparison_check`, `exact_four_headings_check`, `no_duplicate_heading_check`, `no_fifth_section_check`, `section3_exact_title_check`, `section4_no_repeated_memory_title_check`, `section3_excludes_correct_answer_check`, `no_internal_audit_note_check`, `section4_single_memory_heading_check`.
+- **图三教学风格**：采用白话+生活化类比风格。第 2 段禁止模板句（"贴合原始解析/符合教材规则/符合题意"），必须写因果解释。第 3 段禁止空泛句（"没有抓住核心判断点/只是相邻概念/概念不同"），必须说明具体错因类型（主体错/关系错/方向相反/漏关键条件等）。
+- **代理/委托**类题：分清委托人/代理人/第三方三方关系。转承责任是雇主为雇员担责，不误套到代理购物场景。
+- **合约相对性**类题：题干问"这是哪个法律原则"是正向定义题，不误判为反向题。
+- **生活化类比**：可加入简短类比，不能太长。
+   - Spotcheck must include: `simplified_chinese_check`, `no_source_reference_check`, `four_section_only_check`, `concrete_wrong_option_reason_check`, `no_generic_comparison_check`, `exact_four_headings_check`, `no_duplicate_heading_check`, `no_fifth_section_check`, `section3_exact_title_check`, `section4_no_repeated_memory_title_check`, `section3_excludes_correct_answer_check`, `no_internal_audit_note_check`, `section4_single_memory_heading_check`, `teaching_style_check`, `no_original_explanation_reference_check`, `concrete_option_reason_check`, `agency_relationship_check`, `contract_privity_direction_check`, `no_empty_template_phrase_check`.
    - If any format check fails, `format_failure_count` must be > 0 and `generic_explanation_count` must be > 0; stop and do not commit.
 - `EVIDENCE_AUDIT_BATCHN_REWRITE_AUDIT.md`
    - `EVIDENCE_AUDIT_BATCHN_REWRITE_SPOTCHECK.md`
