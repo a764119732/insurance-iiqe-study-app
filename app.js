@@ -1148,6 +1148,9 @@ function renderOption(q, letter, text, answer) {
 function renderResult(q, answer) {
   const explanationStatus = getExplanationStatus(q.simple_explanation);
   const wrongCount = getWrongCount(q.id);
+  const simpleExplanation = String(q.simple_explanation || "").trim();
+  const fallbackMemoryTip = !simpleExplanation && q.memory_tip ? String(q.memory_tip).trim() : "";
+  const explanationText = simpleExplanation || fallbackMemoryTip || "暂无大白话解析。";
   return `
     <section class="result-box" id="quizResult">
       <h3>${answer.isCorrect ? "回答正确" : "回答错误"}，正确答案：${q.correct_answer}</h3>
@@ -1156,8 +1159,7 @@ function renderResult(q, answer) {
         <strong>大白话解析</strong>
         ${explanationStatus ? `<span class="explanation-status ${explanationStatus.className}">${explanationStatus.label}</span>` : ""}
       </div>
-      <pre>${escapeHtml(q.simple_explanation || "暂无大白话解析。")}</pre>
-      ${q.memory_tip ? `<div class="memory-box"><strong>记忆口诀</strong><pre>${escapeHtml(q.memory_tip)}</pre></div>` : ""}
+      <pre>${escapeHtml(explanationText)}</pre>
       <details class="original-explanation">
         <summary>原始 PDF 解析</summary>
         <pre>${escapeHtml(q.original_explanation || "暂无原始解析。")}</pre>
