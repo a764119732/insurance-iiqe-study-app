@@ -16,6 +16,30 @@ description: 一键扫描并返修所有格式完整但内容空泛的 simple_ex
 
 ## 8 阶段完整流程
 
+### Golden Sample Driven Rewrite
+
+大范围解析返修必须以黄金样本为风格基准，而不是只追求题量或标题合格。
+
+读取并使用 `GOLDEN_EXPLANATION_SAMPLES.md`：
+
+| 题型 / 场景 | 必须参考样本 |
+|---|---|
+| 最高诚信 / 毋须披露 / 例外题 | P1-553 |
+| 合约相对性 / 第三者不是合约一方 / 正向定义题 | P1-244 / P1-245 |
+| i/ii/iii/iv 组合题 / 代理法责任方向 | P1-279 |
+| 不正确 / 绝对化表述 / 保险代理人责任 | P1-1291 |
+
+阶段 2 rewrite plan 必须为每题记录最接近的 golden_sample_id。没有 golden sample 分类的题，不得自动写入。
+
+规则：
+
+1. 后续大范围修复必须先判断题型，再选择最接近的黄金样本。
+2. 类似 P1-553 / P1-244 / P1-245 / P1-279 / P1-1291 的题，必须参考对应样本。
+3. 组合题必须按 P1-279 结构处理。
+4. 反向绝对化题必须按 P1-1291 结构处理。
+5. 合约相对性/正向定义题必须按 P1-244/P1-245 结构处理。
+6. 毋须披露/例外题必须按 P1-553 结构处理。
+
 ### 阶段 0：恢复与前置检查
 
 1. 读取核心上下文文件。
@@ -51,7 +75,7 @@ description: 一键扫描并返修所有格式完整但内容空泛的 simple_ex
 4. Batch5/6 新写入但质量不具体的题
 5. 记忆法是万能句的题
 
-每题必须列：question_id、paper、correct_answer、current_issue、rewrite_basis、option_explanation_plan、risk_note。
+每题必须列：question_id、paper、correct_answer、current_issue、golden_sample_id、rewrite_basis、option_explanation_plan、risk_note。
 
 创建 `SPECIFICITY_REPAIR_BATCH{R}_REWRITE_PLAN.md`。
 
@@ -87,17 +111,20 @@ description: 一键扫描并返修所有格式完整但内容空泛的 simple_ex
 9. **第 4 段标题必须固定**为 `4. 记忆口诀`，正文第一行不得再次重复"记忆口诀"四个字。
 10. 如需做题技巧，必须合并进第 4 段，禁止新增 `5. 快速判断`、`5. 做题技巧`、`5. 遇到类似题怎么快速判断`。
 11. **正确答案解释只放第 2 段**：正确答案为什么对，必须集中在第 2 段说明。
-12. **第 3 段只解释非正确选项**：
+12. **第 3 段只解释非正确选项（普通题）**：
    - 正确答案 A → 第 3 段只解释 B/C/D 为什么错。
    - 正确答案 B → 第 3 段只解释 A/C/D 为什么错。
    - 正确答案 C → 第 3 段只解释 A/B/D 为什么错。
    - 正确答案 D → 第 3 段只解释 A/B/C 为什么错。
-   - 禁止在第 3 段写 "A 对" / "B 对" / "C 对" / "D 对"。
-   - 组合题例外：可先解释 i/ii/iii/iv 小项对错，再解释错误组合；但不得把正确选项的完整理由搬到第 3 段。
+   - 普通题禁止在第 3 段写 "A 对" / "B 对" / "C 对" / "D 对"。
+   - 组合题例外：第 3 段标题仍固定为 `3. 逐项解释其他选项为什么错`，段内必须先解释 i/ii/iii/iv 小项对错，再解释 A/B/C/D 组合；不得把正确选项的完整理由搬到第 3 段。
 13. **禁止内部审计备注进入 simple_explanation**：包括"新增题待复核"、"待人工复核"、"先确认答案"、"教材依据待确认"、"rewrite_basis"、"risk_note"、"audit"、"spotcheck"。
 14. **不允许** 大段复制 original_explanation。
 15. **每个错误选项必须有具体错因**，不允许空泛解释其他选项。
-16. **组合题特殊规则**：必须先逐项解释 i/ii/iii/iv 每个罗马数字项目，再解释 A/B/C/D。禁止在组合题中用空泛句。
+16. **组合题特殊规则**：第 3 段标题仍固定为 `3. 逐项解释其他选项为什么错`，但段内必须分两步写：
+   - 先判断 i / ii / iii / iv：`i 对/错：原因`、`ii 对/错：原因`、`iii 对/错：原因`、`iv 对/错：原因`。
+   - 再看 A/B/C/D 组合：正确组合为什么刚好包含正确小项；错误组合具体多了哪个错误小项、漏了哪个正确小项。
+   - 禁止只写"多包或少包某个小项"、不解释 i/ii/iii/iv、直接凭感觉说 A/B/C/D、跳过"小项判断"步骤。
 17. 依据不足 → 跳过并记录 skipped。
 
 ### 阶段 5：写入后质量审计
@@ -118,7 +145,7 @@ Spotcheck ≥ 30%，必须检查以下质量指标，**任一失败则 `generic_
 | 8 | `no_fifth_section_check` | 不出现任何第 5 段 |
 | 9 | `section3_exact_title_check` | 第 3 段标题严格等于 `3. 逐项解释其他选项为什么错` |
 | 10 | `section4_no_repeated_memory_title_check` | 第 4 段正文不再重复"记忆口诀" |
-| 11 | `section3_excludes_correct_answer_check` | 第 3 段只解释非正确选项 |
+| 11 | `section3_excludes_correct_answer_check` | 普通题第 3 段只解释非正确选项；组合题按小项→组合两步写 |
 | 12 | `no_internal_audit_note_check` | 用户可见解析无内部审计备注 |
 | 13 | `section4_single_memory_heading_check` | 第 4 段只出现一次 `4. 记忆口诀`，正文无单独一行"记忆口诀" |
 | 14 | `teaching_style_check` | 第 2 段因果解释（非模板句），第 3 段具体错因类型 |
@@ -132,7 +159,7 @@ Spotcheck ≥ 30%，必须检查以下质量指标，**任一失败则 `generic_
 - 是否为 4 段式
 - 是否逐项解释其他选项
 - 第 2 段是否集中解释正确答案
-- 第 3 段是否排除正确答案解释
+- 第 3 段是否排除普通题正确答案解释；组合题是否先判断 i/ii/iii/iv，再判断 A/B/C/D
 - 是否解释反向题/例外题
 - 是否仍有原文搬运
 - 是否无内部审计备注
@@ -160,7 +187,7 @@ Spotcheck ≥ 30%，必须检查以下质量指标，**任一失败则 `generic_
 | 9 | 编码 | 0 |
 | 10 | 4 段式完整性 | 写入数/写入数 |
 | 11 | 逐项解释选项通过率 | 100% |
-| 11a | 组合题 i/ii/iii/iv 逐项解释 | 100% |
+| 11a | 组合题 i/ii/iii/iv 逐项解释 + A/B/C/D 组合具体错因 | 100% |
 | 11b | simplified_chinese_check | 0 繁体字 |
 | 11c | no_source_reference_check | 0 教材引用 |
 | 11d | four_section_only_check | 0 第5段 |

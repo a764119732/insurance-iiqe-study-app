@@ -1,5 +1,26 @@
 # Project A Session Log - Latest Entry
 
+## [2026-06-04] 组合题第 3 段两步写法规则补充
+
+- 目标：只更新解析规则文件，补充组合题第 3 段写法；不修改题库 JSON，不继续 Batch 5。
+- 规则补充：第 3 段标题仍固定为 `3. 逐项解释其他选项为什么错`。
+- 组合题第 3 段内部必须先判断 i/ii/iii/iv 每个小项对错并说明原因，再判断 A/B/C/D 组合。
+- A/B/C/D 组合说明必须写清：正确组合为什么刚好包含正确小项；错误组合具体多了哪个错误小项、漏了哪个正确小项。
+- 禁止只写"多包或少包某个小项"、不解释 i/ii/iii/iv、直接凭感觉说 A/B/C/D、跳过小项判断。
+- 未修改 data/paper1_questions.json、data/paper3_questions.json、app.js、style.css、index.html、README、extract_questions.py。
+- 未暂存、未 commit、未 push。
+
+## [2026-06-04] 黄金样本驱动的大范围修复机制补齐
+
+- 目标：补齐黄金样本驱动的大范围解析修复机制；本轮只改规则/流程/审计文件。
+- 只读读取并整理 5 个黄金样本当前 `simple_explanation`：P1-553、P1-244、P1-245、P1-279、P1-1291。
+- 新增 `GOLDEN_EXPLANATION_SAMPLES.md`，记录样本总原则和 5 个黄金样本的题型、结构、质量标准。
+- 新增 `SPECIFICITY_REPAIR_BATCH5_STRATEGY.md`，规定 Batch 5 先选 60-80 题、至少 50% spotcheck、出现 repair_needed 即停止不得 commit。
+- 更新 4 个规则入口加入 `Golden Sample Driven Rewrite`：explanation-style SKILL、evidence-rewrite SKILL、specificity-repair-auto command、CLAUDE.md。
+- 明确后续大范围返修必须先判断题型，再选择最接近黄金样本：P1-553、P1-244/P1-245、P1-279、P1-1291。
+- 未修改 data/paper1_questions.json、data/paper3_questions.json、app.js、style.css、index.html、README、extract_questions.py。
+- 未暂存、未 commit、未 push。
+
 ## [2026-06-04] 图三教学风格规则升级 + 合约相对性题小范围返修
 
 - 升级 4 个规则文件（CLAUDE.md、explanation-style SKILL、evidence-rewrite SKILL、specificity-repair-auto command），新增"图三教学风格"规则。
