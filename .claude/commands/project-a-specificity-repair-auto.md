@@ -86,10 +86,19 @@ description: 一键扫描并返修所有格式完整但内容空泛的 simple_ex
 8. **第 3 段标题必须固定**为 `3. 一一解释其他选项为什么错`，禁止 `3. ——解释其他选项为什么错`、`3. 其他选项为什么不适合`、`3. 其他选项为什么错`、`3. 逐项解释` 等写法。
 9. **第 4 段标题必须固定**为 `4. 记忆口诀`，正文第一行不得再次重复"记忆口诀"四个字。
 10. 如需做题技巧，必须合并进第 4 段，禁止新增 `5. 快速判断`、`5. 做题技巧`、`5. 遇到类似题怎么快速判断`。
-11. **不允许** 大段复制 original_explanation。
-12. **每个错误选项必须有具体错因**，不允许空泛解释其他选项。
-13. **组合题特殊规则**：必须先逐项解释 i/ii/iii/iv 每个罗马数字项目，再解释 A/B/C/D。禁止在组合题中用空泛句。
-14. 依据不足 → 跳过并记录 skipped。
+11. **正确答案解释只放第 2 段**：正确答案为什么对，必须集中在第 2 段说明。
+12. **第 3 段只解释非正确选项**：
+   - 正确答案 A → 第 3 段只解释 B/C/D 为什么错。
+   - 正确答案 B → 第 3 段只解释 A/C/D 为什么错。
+   - 正确答案 C → 第 3 段只解释 A/B/D 为什么错。
+   - 正确答案 D → 第 3 段只解释 A/B/C 为什么错。
+   - 禁止在第 3 段写 "A 对" / "B 对" / "C 对" / "D 对"。
+   - 组合题例外：可先解释 i/ii/iii/iv 小项对错，再解释错误组合；但不得把正确选项的完整理由搬到第 3 段。
+13. **禁止内部审计备注进入 simple_explanation**：包括"新增题待复核"、"待人工复核"、"先确认答案"、"教材依据待确认"、"rewrite_basis"、"risk_note"、"audit"、"spotcheck"。
+14. **不允许** 大段复制 original_explanation。
+15. **每个错误选项必须有具体错因**，不允许空泛解释其他选项。
+16. **组合题特殊规则**：必须先逐项解释 i/ii/iii/iv 每个罗马数字项目，再解释 A/B/C/D。禁止在组合题中用空泛句。
+17. 依据不足 → 跳过并记录 skipped。
 
 ### 阶段 5：写入后质量审计
 
@@ -109,18 +118,24 @@ Spotcheck ≥ 30%，必须检查以下质量指标，**任一失败则 `generic_
 | 8 | `no_fifth_section_check` | 不出现任何第 5 段 |
 | 9 | `section3_exact_title_check` | 第 3 段标题严格等于 `3. 一一解释其他选项为什么错` |
 | 10 | `section4_no_repeated_memory_title_check` | 第 4 段正文不再重复"记忆口诀" |
+| 11 | `section3_excludes_correct_answer_check` | 第 3 段只解释非正确选项 |
+| 12 | `no_internal_audit_note_check` | 用户可见解析无内部审计备注 |
+| 13 | `section4_single_memory_heading_check` | 第 4 段只出现一次 `4. 记忆口诀`，正文无单独一行"记忆口诀" |
 
 此外还必须检查：
 - 是否为 4 段式
 - 是否逐项解释其他选项
+- 第 2 段是否集中解释正确答案
+- 第 3 段是否排除正确答案解释
 - 是否解释反向题/例外题
 - 是否仍有原文搬运
+- 是否无内部审计备注
 - 记忆口诀是否具体
 - **generic_explanation_count 必须为 0**
 - **format_failure_count 必须为 0**
 - **combination_question_failure_count 必须为 0**
 
-**如果 generic_explanation_count > 0 或 format_failure_count > 0，必须停止，不得 commit。**
+**如果 generic_explanation_count > 0 或 format_failure_count > 0，必须停止，不得 commit。任一新增格式检查失败时，`format_failure_count` 和 `generic_explanation_count` 都必须 > 0。**
 
 ### 阶段 6：完整 Safety Check
 
@@ -150,6 +165,9 @@ Spotcheck ≥ 30%，必须检查以下质量指标，**任一失败则 `generic_
 | 11i | no_fifth_section_check | 0 第5段 |
 | 11j | section3_exact_title_check | 100% |
 | 11k | section4_no_repeated_memory_title_check | 0 重复"记忆口诀" |
+| 11l | section3_excludes_correct_answer_check | 100% |
+| 11m | no_internal_audit_note_check | 0 内部备注 |
+| 11n | section4_single_memory_heading_check | 100% |
 | 12 | generic_explanation_count | 0 |
 | 12a | format_failure_count | 0 |
 | 13 | git diff --check | 通过 |
@@ -189,6 +207,9 @@ Spotcheck ≥ 30%，必须检查以下质量指标，**任一失败则 `generic_
 | 保护字段变化 != 0 | 6 |
 | generic_explanation_count > 0 | 5,6 |
 | format_failure_count > 0 | 5,6 |
+| section3_excludes_correct_answer_check 失败 | 5,6 |
+| no_internal_audit_note_check 失败 | 5,6 |
+| section4_single_memory_heading_check 失败 | 5,6 |
 | 编码污染 | 6 |
 | JSON parse 失败 | 6 |
 | push 失败 | 7 |

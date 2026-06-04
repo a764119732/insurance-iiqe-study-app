@@ -319,3 +319,23 @@
 - Any format failure must count toward `generic_explanation_count` or `format_failure_count`; stop and do not commit.
 - Next action: manually accept 10 questions from Validation Batch 1 before running Specificity Repair Batch 3. If accepted, keep Batch 3 at 100-120 questions first.
 - 未修改 JSON、UI、PDF、离线版、sharedFiles、extract_questions.py。
+
+---
+
+### [2026-06-04] P1-553 validation rule gap fill
+
+- Manual validation of P1-553 found three rule gaps:
+  - Section 3 was titled as wrong-option explanations but still included the correct answer explanation.
+  - Section 4 repeated the standalone "记忆口诀" heading.
+  - User-facing `simple_explanation` included internal audit notes such as "新增题待复核" / "先确认答案".
+- Added hard rules:
+  - Section 2 owns the correct-answer explanation.
+  - Section 3 must explain only incorrect answer choices; no "A 对" / "B 对" / "C 对" / "D 对" unless handling i/ii/iii/iv subitems in a combination question.
+  - Internal audit notes are forbidden in user-facing `simple_explanation`.
+  - Section 4 may have only one memory heading.
+- Added required checks:
+  - `section3_excludes_correct_answer_check`
+  - `no_internal_audit_note_check`
+  - `section4_single_memory_heading_check`
+- If any new format check fails, both `format_failure_count` and `generic_explanation_count` must be > 0; stop and do not commit.
+- 本轮只改规则/交接文件；未修改 JSON、UI、PDF、离线版、sharedFiles、extract_questions.py；未 commit、未 push。

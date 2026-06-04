@@ -52,6 +52,21 @@ Use the 4-section explanation format for `simple_explanation`.
 
 这些可以存在于 rewrite_basis / plan，但不能出现在给用户看的大白话解析里。
 
+## No Internal Audit Notes In User-Facing Text
+
+`simple_explanation` 是用户可见解析，禁止出现内部审计、返修计划或待确认备注，包括：
+
+- "新增题待复核"
+- "待人工复核"
+- "先确认答案"
+- "教材依据待确认"
+- "rewrite_basis"
+- "risk_note"
+- "audit"
+- "spotcheck"
+
+这些只能出现在审计 Markdown、rewrite plan、spotcheck 文档中，不得出现在 `simple_explanation`。
+
 ## Section Rules
 
 ### 1. 考点
@@ -66,6 +81,7 @@ Use the 4-section explanation format for `simple_explanation`.
 
 - 必须直接说明正确答案是什么。
 - 必须解释正确选项为什么命中题干。
+- 正确答案为什么对，必须集中在第 2 段说明。
 - **不能只写"符合题意""原文支持""与题干一致"。**
 - 如果题目是反向问法，必须解释为什么正确答案是"被排除/不属于/例外"的那个。
 
@@ -80,6 +96,14 @@ Use the 4-section explanation format for `simple_explanation`.
 - `3. 逐项解释`
 - 任何带破折号或不完整标题的写法
 
+- 第 3 段只能解释**非正确选项**为什么错。
+- 如果正确答案是 A，第 3 段只解释 B/C/D 为什么错。
+- 如果正确答案是 B，第 3 段只解释 A/C/D 为什么错。
+- 如果正确答案是 C，第 3 段只解释 A/B/D 为什么错。
+- 如果正确答案是 D，第 3 段只解释 A/B/C 为什么错。
+- 第 3 段不要重复正确答案解释。
+- 禁止在第 3 段写 "A 对" / "B 对" / "C 对" / "D 对"。
+- 组合题例外：如果题目包含 i/ii/iii/iv，允许先说明每个小项对错；但必须先解释小项，再解释错误组合，且仍不得把正确选项的完整理由搬到第 3 段。
 - 必须逐项解释未选选项。
 - A/B/C/D 中每个非正确选项都必须有**具体**解释。
 
@@ -167,6 +191,8 @@ Any `simple_explanation` hitting any of these is marked `needs_repair`:
 14. 选项解释为"和正确答案不同/概念不同"等空泛句。
 15. 一级标题不是严格 4 个，或第 3 / 第 4 段标题不是固定标题。
 16. 第 4 段正文再次重复"记忆口诀"标题。
+17. 第 3 段解释了正确选项，或出现 "A 对" / "B 对" / "C 对" / "D 对"。
+18. 出现内部审计备注，如"新增题待复核"、"待人工复核"、"先确认答案"、"教材依据待确认"、"rewrite_basis"、"risk_note"、"audit"、"spotcheck"。
 
 ## Spotcheck Quality Criteria
 
@@ -184,9 +210,13 @@ Any `simple_explanation` hitting any of these is marked `needs_repair`:
 | 8 | `no_fifth_section_check` | 不出现任何 `5.` 一级段落 |
 | 9 | `section3_exact_title_check` | 第 3 段标题必须为 `3. 一一解释其他选项为什么错` |
 | 10 | `section4_no_repeated_memory_title_check` | 第 4 段正文不再重复"记忆口诀" |
+| 11 | `section3_excludes_correct_answer_check` | 第 3 段只解释非正确选项，不解释正确答案 |
+| 12 | `no_internal_audit_note_check` | 用户可见解析无内部审计备注 |
+| 13 | `section4_single_memory_heading_check` | 第 4 段只出现一次 `4. 记忆口诀`，正文无单独一行"记忆口诀" |
 
 如果任一格式检查失败：
-- 必须计入 `generic_explanation_count` 或 `format_failure_count`。
+- `format_failure_count` 必须 > 0。
+- `generic_explanation_count` 必须 > 0。
 - 不得 commit。
 - 必须停止并汇报。
 
@@ -195,6 +225,9 @@ Any `simple_explanation` hitting any of these is marked `needs_repair`:
 - All `simple_explanation` must be in simplified Chinese.
 - Do not reference textbook sections or original explanations.
 - Do not say only that an option does not match the question.
+- Explain the correct answer in section 2 only.
+- In section 3, explain only incorrect answer choices; do not repeat the correct answer explanation.
+- Do not include internal audit notes in user-facing `simple_explanation`.
 - Explain why each option is correct or wrong with concrete reasons.
 - For combination questions, explain included and excluded items.
 - For negative, exception, and all-items questions, state the judgment direction first.

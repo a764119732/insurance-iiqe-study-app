@@ -52,11 +52,14 @@
 - 解释重写只允许修改 `simple_explanation`。
 - 使用 4 段式格式（严格 4 段，禁止第 5 段）：`1. 考点` / `2. 结论 + 解释` / `3. 一一解释其他选项为什么错` / `4. 记忆口诀`。
 - 一级标题必须精确匹配上述 4 个标题；第 3 段禁止破折号或改写标题；第 4 段正文禁止再次重复"记忆口诀"标题。
+- 第 2 段负责解释正确答案为什么对；第 3 段只能解释非正确选项为什么错，不得重复正确答案解释。
+- 第 3 段禁止写 "A 对" / "B 对" / "C 对" / "D 对"；组合题只能先解释 i/ii/iii/iv 小项对错，再解释错误组合。
+- 用户可见 `simple_explanation` 禁止出现内部审计备注：`新增题待复核`、`待人工复核`、`先确认答案`、`教材依据待确认`、`rewrite_basis`、`risk_note`、`audit`、`spotcheck`。
 - **简体中文**：simple_explanation 必须简体，禁止繁体字和教材引用（"原始解析/教材第X章/编号"）。
 - **具体错因**：每个错误选项必须说具体错因，禁止"和正确答案不同/概念不同"等空泛句。
 - **组合题特殊规则**：必须先逐项解释 i/ii/iii/iv，再解释 A/B/C/D。
-- Spotcheck 必须明确执行：`simplified_chinese_check`、`no_source_reference_check`、`four_section_only_check`、`concrete_wrong_option_reason_check`、`no_generic_comparison_check`、`exact_four_headings_check`、`no_duplicate_heading_check`、`no_fifth_section_check`、`section3_exact_title_check`、`section4_no_repeated_memory_title_check`。
-- 任一格式检查失败必须计入 `generic_explanation_count` 或 `format_failure_count`，不得 commit，必须停止并汇报。
+- Spotcheck 必须明确执行：`simplified_chinese_check`、`no_source_reference_check`、`four_section_only_check`、`concrete_wrong_option_reason_check`、`no_generic_comparison_check`、`exact_four_headings_check`、`no_duplicate_heading_check`、`no_fifth_section_check`、`section3_exact_title_check`、`section4_no_repeated_memory_title_check`、`section3_excludes_correct_answer_check`、`no_internal_audit_note_check`、`section4_single_memory_heading_check`。
+- 任一格式检查失败时，`format_failure_count` 必须 > 0，`generic_explanation_count` 必须 > 0，不得 commit，必须停止并汇报。
 - 禁止修改保护字段：`original_explanation`、`question_traditional` / `question_simplified`、`options_traditional` / `options_simplified`、`correct_answer`、`source_page`、`source_file`、`reference`、`chapter`、`section`。
 - UI 修改和 JSON 修改必须分开 commit。
 - `PROJECT_A_MEMORY.md` 默认本地维护，不提交。
@@ -106,6 +109,8 @@ D:\Users\Leo\Desktop\codex\Insurance\insurance-iiqe-study-app
 - 禁止任何第 5 段；如需做题技巧，合并进第 4 段。
 - 第 3 段标题必须固定为 `3. 一一解释其他选项为什么错`，禁止 `3. ——解释其他选项为什么错`、`3. 其他选项为什么不适合`、`3. 其他选项为什么错`、`3. 逐项解释`。
 - 第 4 段标题必须固定为 `4. 记忆口诀`，正文中不要再次重复"记忆口诀"四个字。
+- 正确答案解释必须集中在第 2 段；第 3 段只解释非正确选项，不写正确选项为什么对。
+- 禁止内部审计备注进入用户可见解析，包括"新增题待复核"、"待人工复核"、"先确认答案"、"教材依据待确认"、"rewrite_basis"、"risk_note"、"audit"、"spotcheck"。
 - 法律、监管、制度题必须先经过 Evidence Audit 人工证据审计，不得自由发挥。
 - 不修改题干、选项、`correct_answer`、`original_explanation`、来源字段。
 
