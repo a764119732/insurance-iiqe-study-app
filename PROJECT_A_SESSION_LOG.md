@@ -339,3 +339,16 @@
   - `section4_single_memory_heading_check`
 - If any new format check fails, both `format_failure_count` and `generic_explanation_count` must be > 0; stop and do not commit.
 - 本轮只改规则/交接文件；未修改 JSON、UI、PDF、离线版、sharedFiles、extract_questions.py；未 commit、未 push。
+
+---
+
+### [2026-06-04] Section 3 heading wording updated
+
+- P1-553 online validation found `3. 一一解释其他选项为什么错` can visually resemble a dash-heavy title in the webpage font.
+- Updated the fixed Section 3 title to: `3. 逐项解释其他选项为什么错`.
+- Section headings now remain:
+  1. `1. 考点`
+  2. `2. 结论 + 解释`
+  3. `3. 逐项解释其他选项为什么错`
+  4. `4. 记忆口诀`
+- Updated P1-553 golden sample title and current rule files so future Specificity Repair batches use the new wording.

@@ -12,7 +12,7 @@ Use the 4-section explanation format for `simple_explanation`.
 ```
 1. 考点
 2. 结论 + 解释
-3. 一一解释其他选项为什么错
+3. 逐项解释其他选项为什么错
 4. 记忆口诀
 ```
 
@@ -85,12 +85,13 @@ Use the 4-section explanation format for `simple_explanation`.
 - **不能只写"符合题意""原文支持""与题干一致"。**
 - 如果题目是反向问法，必须解释为什么正确答案是"被排除/不属于/例外"的那个。
 
-### 3. 一一解释其他选项为什么错
+### 3. 逐项解释其他选项为什么错
 
-第 3 段标题必须固定为：`3. 一一解释其他选项为什么错`。
+第 3 段标题必须固定为：`3. 逐项解释其他选项为什么错`。
 
 禁止以下标题写法：
 - `3. ——解释其他选项为什么错`
+- `3. 一一解释其他选项为什么错`
 - `3. 其他选项为什么不适合`
 - `3. 其他选项为什么错`
 - `3. 逐项解释`
@@ -208,7 +209,7 @@ Any `simple_explanation` hitting any of these is marked `needs_repair`:
 | 6 | `exact_four_headings_check` | 一级标题严格等于 1-4 固定标题 |
 | 7 | `no_duplicate_heading_check` | 正文不重复一级标题 |
 | 8 | `no_fifth_section_check` | 不出现任何 `5.` 一级段落 |
-| 9 | `section3_exact_title_check` | 第 3 段标题必须为 `3. 一一解释其他选项为什么错` |
+| 9 | `section3_exact_title_check` | 第 3 段标题必须为 `3. 逐项解释其他选项为什么错` |
 | 10 | `section4_no_repeated_memory_title_check` | 第 4 段正文不再重复"记忆口诀" |
 | 11 | `section3_excludes_correct_answer_check` | 第 3 段只解释非正确选项，不解释正确答案 |
 | 12 | `no_internal_audit_note_check` | 用户可见解析无内部审计备注 |
@@ -235,4 +236,4 @@ Any `simple_explanation` hitting any of these is marked `needs_repair`:
 - Keep wording beginner-friendly, concrete, and reviewable.
 - Strict 4-section only. No 5th section.
 - Use exact section headings only:
-  `1. 考点`, `2. 结论 + 解释`, `3. 一一解释其他选项为什么错`, `4. 记忆口诀`.
+  `1. 考点`, `2. 结论 + 解释`, `3. 逐项解释其他选项为什么错`, `4. 记忆口诀`.

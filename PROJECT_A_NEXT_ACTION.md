@@ -56,7 +56,7 @@ Specificity Repair Batch 3
 - exact_four_headings_check: 100%
 - no_duplicate_heading_check: 0 重复标题
 - no_fifth_section_check: 0 第5段
-- section3_exact_title_check: 100%
+- section3_exact_title_check: 100%，固定标题为 `3. 逐项解释其他选项为什么错`
 - section4_no_repeated_memory_title_check: 0 重复"记忆口诀"
 - section3_excludes_correct_answer_check: 100%
 - no_internal_audit_note_check: 0 内部备注

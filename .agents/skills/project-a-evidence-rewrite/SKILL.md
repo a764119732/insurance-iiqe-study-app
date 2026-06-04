@@ -22,14 +22,14 @@ Use this skill only when the user explicitly authorizes JSON writing or explanat
    - `reference`
    - chapter / section fields
 6. Generate:
-   - Use 4-section format from `project-a-explanation-style`: 1. 考点 2. 结论+解释 3. 一一解释其他选项为什么错 4. 记忆口诀
+   - Use 4-section format from `project-a-explanation-style`: 1. 考点 2. 结论 + 解释 3. 逐项解释其他选项为什么错 4. 记忆口诀
 - **Strict 4-section only**：`simple_explanation` 必须严格只有 4 个一级编号标题：
   - `1. 考点`
   - `2. 结论 + 解释`
-  - `3. 一一解释其他选项为什么错`
+  - `3. 逐项解释其他选项为什么错`
   - `4. 记忆口诀`
 - **No 5th section**：禁止任何第 5 段（`5. 遇到类似题怎么快速判断`、`5. 快速判断`、`5. 做题技巧` 等）。如需做题技巧，必须合并进第 4 段。
-- **Exact headings only**：第 3 段标题必须固定为 `3. 一一解释其他选项为什么错`，禁止 `3. ——解释其他选项为什么错`、`3. 其他选项为什么不适合`、`3. 其他选项为什么错`、`3. 逐项解释` 或任何带破折号 / 不完整标题。
+- **Exact headings only**：第 3 段标题必须固定为 `3. 逐项解释其他选项为什么错`，禁止 `3. ——解释其他选项为什么错`、`3. 一一解释其他选项为什么错`、`3. 其他选项为什么不适合`、`3. 其他选项为什么错`、`3. 逐项解释` 或任何带破折号 / 不完整标题。
 - **No duplicate memory heading**：第 4 段标题必须固定为 `4. 记忆口诀`，正文中不要再次重复"记忆口诀"四个字。
 - **Correct answer only in section 2**：正确答案为什么对，必须集中在第 2 段说明。
 - **Section 3 excludes correct answer**：第 3 段只能解释非正确选项为什么错；如果正确答案是 A，只解释 B/C/D；如果正确答案是 B，只解释 A/C/D；如果正确答案是 C，只解释 A/B/D；如果正确答案是 D，只解释 A/B/C。禁止在第 3 段写 "A 对" / "B 对" / "C 对" / "D 对"。组合题例外：可先解释 i/ii/iii/iv 小项对错，再解释错误组合，但不得把正确选项的完整理由搬到第 3 段。
