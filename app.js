@@ -16,6 +16,11 @@ let route = "home";
 let quizQueue = [];
 let quizIndex = 0;
 let quizJumpMessage = "";
+let questionIdSearch = {
+  query: "",
+  resultId: null,
+  message: "",
+};
 let activeExam = null;
 let examTimer = null;
 
@@ -126,6 +131,242 @@ function escapeHtml(value) {
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#039;");
+}
+
+function getContextPaper(fallback = null) {
+  if (fallback === "P1" || fallback === "P3") return fallback;
+  if (route === "quiz") {
+    const current = byId.get(quizQueue[quizIndex]);
+    if (current?.paper === "P1" || current?.paper === "P3") return current.paper;
+    const sessionPaper = state.sessions?.practice?.paper;
+    if (sessionPaper === "P1" || sessionPaper === "P3") return sessionPaper;
+  }
+  if (state.activePaper === "P1" || state.activePaper === "P3") return state.activePaper;
+  return null;
+}
+
+function normalizeQuestionIdInput(raw, contextPaper) {
+  const value = String(raw || "").trim();
+  const fullMatch = value.match(/^P([13])\s*-\s*(\d+)$/i);
+  if (fullMatch) {
+    return `P${fullMatch[1]}-${String(Number(fullMatch[2])).padStart(3, "0")}`;
+  }
+  if (/^\d+$/.test(value)) {
+    if (!contextPaper) return null;
+    return `${contextPaper}-${String(Number(value)).padStart(3, "0")}`;
+  }
+  return null;
+}
+
+function getQuestionLocation(q) {
+  const sectionQuestions = questions.filter((item) => item.paper === q.paper && item.section === q.section);
+  const chapterQuestions = questions.filter((item) => item.paper === q.paper && item.chapter === q.chapter);
+  return {
+    paperLabel: q.paper === "P1" ? "卷一" : q.paper === "P3" ? "卷三" : q.paper,
+    chapterLabel: q.chapter ? `第${q.chapter}章${q.chapter_title ? ` ${q.chapter_title}` : ""}` : "",
+    sectionLabel: q.section ? `第${q.section}节${q.section_title ? ` ${q.section_title}` : ""}` : "",
+    sectionIndex: Math.max(0, sectionQuestions.findIndex((item) => item.id === q.id)) + 1,
+    chapterIndex: Math.max(0, chapterQuestions.findIndex((item) => item.id === q.id)) + 1,
+    sectionTotal: sectionQuestions.length,
+    chapterTotal: chapterQuestions.length,
+  };
+}
+
+function getQuestionSummary(q) {
+  const text = t(q, "question").replace(/\s+/g, " ").trim();
+  return text.length > 82 ? `${text.slice(0, 82)}...` : text;
+}
+
+function renderQuestionIdSearch(contextPaper = null) {
+  const resolvedPaper = getContextPaper(contextPaper);
+  const q = questionIdSearch.resultId ? byId.get(questionIdSearch.resultId) : null;
+  return `
+    <section class="question-id-search card" aria-label="题号搜索跳转">
+      <form class="question-id-form" onsubmit="searchQuestionId(event, '${resolvedPaper || ""}')" novalidate>
+        <label for="questionIdSearchInput">题号搜索 / 跳转</label>
+        <div class="question-id-row">
+          <input
+            id="questionIdSearchInput"
+            type="text"
+            placeholder="${resolvedPaper ? `${resolvedPaper}-553 或 553` : "P1-553 或 P3-123"}"
+            value="${escapeHtml(questionIdSearch.query)}"
+            aria-describedby="questionIdSearchMessage"
+          />
+          <button class="button" type="submit">搜索</button>
+        </div>
+      </form>
+      <p class="question-id-message" id="questionIdSearchMessage" aria-live="polite">${escapeHtml(questionIdSearch.message)}</p>
+      ${q ? renderQuestionIdSearchResult(q, resolvedPaper) : ""}
+    </section>
+  `;
+}
+
+function renderQuestionIdSearchResult(q, contextPaper) {
+  const loc = getQuestionLocation(q);
+  const paperNotice = contextPaper && contextPaper !== q.paper
+    ? `<p class="question-id-notice">该题属于${loc.paperLabel}，进入练习时会切换到对应卷。</p>`
+    : "";
+  return `
+    <div class="question-id-result">
+      <div class="meta">
+        <span class="pill">${escapeHtml(q.id)}</span>
+        <span class="pill">${escapeHtml(loc.paperLabel)}</span>
+        ${loc.chapterLabel ? `<span class="pill">${escapeHtml(loc.chapterLabel)}</span>` : ""}
+        ${loc.sectionLabel ? `<span class="pill">${escapeHtml(loc.sectionLabel)}</span>` : ""}
+      </div>
+      <p class="question-id-summary">${escapeHtml(getQuestionSummary(q))}</p>
+      <p class="question-id-position">
+        ${loc.sectionTotal ? `本小节第 ${loc.sectionIndex} 题` : "小节顺序暂不可用"}
+        ${loc.chapterTotal ? `｜本章第 ${loc.chapterIndex} 题` : ""}
+      </p>
+      ${paperNotice}
+      <button class="button" type="button" onclick="enterQuestionIdPractice('${q.id}')">进入该题练习</button>
+    </div>
+  `;
+}
+
+function searchQuestionId(event, contextPaper = "") {
+  event.preventDefault();
+  const input = document.querySelector("#questionIdSearchInput");
+  const raw = String(input?.value || "").trim();
+  const resolvedPaper = getContextPaper(contextPaper || null);
+  questionIdSearch = {
+    query: raw,
+    resultId: null,
+    message: "",
+  };
+
+  const normalizedId = normalizeQuestionIdInput(raw, resolvedPaper);
+  if (!normalizedId) {
+    questionIdSearch.message = /^\d+$/.test(raw)
+      ? "当前无法判断卷别，请输入完整题号，例如 P1-553。"
+      : "请输入类似 P1-553 或 P3-123 的题号。";
+    render();
+    focusQuestionIdSearchInput();
+    return;
+  }
+
+  const q = byId.get(normalizedId);
+  if (!q) {
+    questionIdSearch.message = "未找到该题。";
+    render();
+    focusQuestionIdSearchInput();
+    return;
+  }
+
+  questionIdSearch.resultId = q.id;
+  questionIdSearch.query = q.id;
+  questionIdSearch.message = resolvedPaper && resolvedPaper !== q.paper
+    ? "已找到该题；该题不在当前卷，可切换到对应卷。"
+    : "已找到该题。";
+  render();
+}
+
+function focusQuestionIdSearchInput() {
+  window.requestAnimationFrame(() => {
+    const input = document.querySelector("#questionIdSearchInput");
+    input?.focus();
+    input?.select();
+  });
+}
+
+function getQuestionPracticeScope(q) {
+  if (q.section) {
+    const questionIds = questions.filter((item) => item.paper === q.paper && item.section === q.section).map((item) => item.id);
+    return {
+      paper: q.paper,
+      mode: "section",
+      scopeKey: `${q.paper}:section:${q.section}`,
+      questionIds,
+      startIndex: Math.max(0, questionIds.indexOf(q.id)),
+    };
+  }
+  if (q.chapter) {
+    const questionIds = questions.filter((item) => item.paper === q.paper && item.chapter === q.chapter).map((item) => item.id);
+    return {
+      paper: q.paper,
+      mode: "chapter",
+      scopeKey: `${q.paper}:chapter:${q.chapter}`,
+      questionIds,
+      startIndex: Math.max(0, questionIds.indexOf(q.id)),
+    };
+  }
+  return {
+    paper: q.paper,
+    mode: "single",
+    scopeKey: `single:${q.id}`,
+    questionIds: [q.id],
+    startIndex: 0,
+  };
+}
+
+function showPracticeSwitchModal({ onStay, onSwitch }) {
+  document.querySelector(".practice-resume-modal")?.remove();
+  const modal = document.createElement("div");
+  modal.className = "practice-resume-modal";
+  modal.setAttribute("role", "dialog");
+  modal.setAttribute("aria-modal", "true");
+  modal.innerHTML = `
+    <div class="practice-resume-panel">
+      <h2>当前已有未完成练习，是否切换到搜索到的题目？</h2>
+      <div class="button-row">
+        <button class="ghost-button" data-action="stay">继续当前练习</button>
+        <button class="button" data-action="switch">切换到该题</button>
+      </div>
+    </div>
+  `;
+  modal.querySelector('[data-action="stay"]').addEventListener("click", () => {
+    modal.remove();
+    onStay();
+  });
+  modal.querySelector('[data-action="switch"]').addEventListener("click", () => {
+    modal.remove();
+    onSwitch();
+  });
+  document.body.appendChild(modal);
+  modal.querySelector('[data-action="stay"]').focus();
+}
+
+function enterQuestionIdPractice(id) {
+  const q = byId.get(id);
+  if (!q) {
+    questionIdSearch.message = "未找到该题。";
+    render();
+    return;
+  }
+  const scope = getQuestionPracticeScope(q);
+  const startTarget = () => {
+    state.activePaper = q.paper;
+    startPracticeSession({ ...scope, allowResume: false });
+  };
+  const existing = state.sessions?.practice;
+  if (isUnfinishedPracticeSession(existing) && samePracticeScope(existing, scope.paper, scope.mode, scope.scopeKey)) {
+    const existingIndex = existing.questionIds.indexOf(q.id);
+    if (existingIndex >= 0) {
+      quizQueue = [...existing.questionIds];
+      quizIndex = existingIndex;
+      const answers = hydratePracticeSessionAnswers(existing);
+      state.sessions.practice = {
+        ...existing,
+        currentIndex: quizIndex,
+        answers,
+        answeredIds: getSessionAnsweredIdsForQueue(quizQueue, { ...existing, answers }),
+        updatedAt: new Date().toISOString(),
+      };
+      state.activePaper = q.paper;
+      saveState();
+      setRoute("quiz");
+      return;
+    }
+  }
+  if (isUnfinishedPracticeSession(existing) && !samePracticeScope(existing, scope.paper, scope.mode, scope.scopeKey)) {
+    showPracticeSwitchModal({
+      onStay: () => continuePracticeSession(existing),
+      onSwitch: startTarget,
+    });
+    return;
+  }
+  startTarget();
 }
 
 function setRoute(nextRoute) {
@@ -412,6 +653,8 @@ function renderHome() {
       <div class="progress-bar mastery"><span style="width:${stats.mastery}%"></span></div>
       <p class="hero-note">掌握度按“已答进度 × 正确率”估算，用来判断当前复习推进程度。</p>
     </section>
+
+    ${renderQuestionIdSearch(paper)}
 
     <section class="quick-grid" aria-label="快捷入口">
       ${renderQuickAction("模拟考试", "限时组卷", "📝", `startExam('${paper}')`)}
@@ -785,6 +1028,7 @@ function renderQuiz() {
   }
   const answer = getPracticeAnswer(q.id);
   const options = t(q, "options");
+  const loc = getQuestionLocation(q);
   app.classList.toggle("has-sticky-actions", Boolean(answer));
   app.innerHTML = `
     <article class="question-card">
@@ -792,8 +1036,17 @@ function renderQuiz() {
         <span class="pill">${q.id}</span>
         <span class="pill">${q.paper} 第${q.chapter}章 ${q.chapter_title}</span>
         ${q.is_hot_question ? '<span class="pill hot">热门</span>' : ""}
-        <span class="pill">第 ${quizIndex + 1} / ${quizQueue.length} 题</span>
+        <span class="pill">当前练习第 ${quizIndex + 1} / ${quizQueue.length} 题</span>
       </div>
+      <div class="question-location">
+        <strong>${escapeHtml(q.id)}</strong>
+        ${loc.chapterLabel ? `<span>｜${escapeHtml(loc.chapterLabel)}</span>` : ""}
+        ${loc.sectionLabel ? `<span>｜${escapeHtml(loc.sectionLabel)}</span>` : ""}
+        ${loc.sectionTotal ? `<span>｜本节第 ${loc.sectionIndex} 题</span>` : ""}
+        <span>｜当前练习第 ${quizIndex + 1} / ${quizQueue.length} 题</span>
+      </div>
+      <p class="question-order-note">上面的“当前练习第 X / Y 题”是本次练习范围内顺序，不是全题库题号。</p>
+      ${renderQuestionIdSearch(q.paper)}
       ${renderQuestionJumpControl()}
       <h2 class="question-title">${escapeHtml(t(q, "question"))}</h2>
       <div class="option-list">
