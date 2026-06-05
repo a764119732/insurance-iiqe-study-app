@@ -1,5 +1,22 @@
 # Project A Session Log - Latest Entry
 
+## [2026-06-05] Specificity Repair Batch 6A 写入完成
+
+- 目标：从 Batch 6 计划（60 题）中取前 20 题作为 Batch 6A，执行 4 段式解析重写并完成质量审计。
+- 写入 20 题 `simple_explanation`：P1=17、P3=3。
+- 所有题均为组合题（i/ii/iii/iv），参照 P1-279 黄金样本格式；第 3 段先判断 i/ii/iii/iv 小项，再解释 A/B/C/D 组合。
+- 批量 6A IDs：P1-177, P1-205, P1-863, P1-885, P1-938, P1-945, P1-975, P3-464, P3-748, P3-801, P1-1033, P1-1243, P1-1277, P1-1282, P1-1284, P1-386, P1-472, P1-537, P1-541, P1-542。
+- 排除检查通过：P1-018、P1-091、P3-131 不在范围内；do_not_auto/manual_confirm = 0。
+- 创建文件：`SPECIFICITY_REPAIR_BATCH6A_REWRITE_AUDIT.md`、`SPECIFICITY_REPAIR_BATCH6A_SPOTCHECK.md`。
+- 临时文件已创建并删除：`tmp_batch6a_rewrite.js`、`tmp_batch6a_snapshot.json`。
+- 修改文件：`data/paper1_questions.json`（17 题）、`data/paper3_questions.json`（3 题）——仅 `simple_explanation`。
+- 明确未修改：题干、选项、correct_answer、source_page、reference、chapter/section、original_explanation、memory_tip、app.js、style.css、index.html、README、extract_questions.py、PDF、离线版、sharedFiles。
+- 安全检查全部通过：JSON parse、P1=1391/P3=807/Total=2198、ID 连续、changed_IDs 严格等于 20、extra_changed_ids=0、保护字段变化=0、4 段 20/20、无第 5 段、无内部备注、无空泛句、无繁体字、无教材引用、编码干净、format_failure_count=0、generic_explanation_count=0、combination_question_failure_count=0。
+- Spotcheck：10/20 (50%)，10 keep / 0 repair_needed。
+- 未暂存、未 commit、未 push。
+- 未继续 Batch 6B/6C。
+- Batch 6 剩余 40 题（Batch 6B + 6C）待后续执行。
+
 ## [2026-06-04] 组合题第 3 段两步写法规则补充
 
 - 目标：只更新解析规则文件，补充组合题第 3 段写法；不修改题库 JSON，不继续 Batch 5。

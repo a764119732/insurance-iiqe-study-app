@@ -1,5 +1,26 @@
 # Project A Next Action - Current
 
+## [2026-06-05] Batch 6A 完成，下一步 Batch 6B（20 题）或 Batch 6C（20 题）
+
+Batch 6A 已成功写入 20 题，质量审计和 spotcheck 全部通过（0 repair_needed）。
+
+**当前状态**：
+- Batch 6 rewrite plan 共 60 题，已写入前 20 题（Batch 6A）。
+- 剩余 40 题待分批执行（建议 Batch 6B 和 Batch 6C 各 20 题）。
+- JSON 已修改未暂存：`data/paper1_questions.json`、`data/paper3_questions.json`。
+- 所有安全检查通过：format_failure_count=0、generic_explanation_count=0。
+
+**下一步建议**：
+1. 用户先验收 Batch 6A 的 10 道 spotcheck 题，确认质量满意。
+2. 若验收通过，执行 Batch 6B（下一批 20 题）。
+3. Batch 6B 的 20 题从 rewrite plan 中按顺序取第 21-40 题：
+   P1-593, P1-601, P3-534, P3-541, P3-611, P3-613, P3-634, P3-722, P1-1182, P1-1247, P1-1276, P1-1297, P1-1300, P1-1320, P1-1336, P1-444, P1-463, P1-487, P1-687, P1-699
+4. 写入前仍需先做 Phase 3 校验、保护字段快照、写入后安全检查、spotcheck。
+5. 不要 commit/push 直到用户明确授权。
+6. 全部 60 题完成后统一 commit。
+
+**安全边界**：不提交 PROJECT_A_MEMORY.md、.claude/settings.local.json、FULL_EXPLANATION_BATCH1_USER_ACCEPTANCE_CHECK.md。不处理 Batch 6B/6C 以外的题。
+
 ## [2026-06-04] 组合题第 3 段两步写法规则补充
 
 本轮只更新解析规则文件，不修改题库 JSON，不继续 Batch 5。
