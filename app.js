@@ -186,15 +186,46 @@ function saveHighlightStore(store) {
 function getHighlightsForQuestion(questionId) {
   const values = getHighlightStore()[questionId];
   if (!Array.isArray(values)) return [];
-  return [...new Set(values.map((item) => String(item || "").trim()).filter(Boolean))];
+  return values
+    .map(normalizeHighlightEntry)
+    .filter(Boolean)
+    .filter((entry, index, entries) =>
+      entries.findIndex((item) => item.text === entry.text && item.scope === entry.scope) === index
+    );
 }
 
-function addHighlightForQuestion(questionId, selectedText) {
+function normalizeHighlightEntry(item) {
+  if (typeof item === "string") {
+    const text = item.trim();
+    return text ? { text, scope: "question", createdAt: null } : null;
+  }
+  if (!item || typeof item !== "object") return null;
+  const text = String(item.text || "").trim();
+  if (!text) return null;
+  const allowedScopes = new Set(["question", "option", "explanation", "original"]);
+  const scope = allowedScopes.has(item.scope) ? item.scope : "question";
+  const createdAt = Number.isFinite(item.createdAt) ? item.createdAt : null;
+  return { text, scope, createdAt };
+}
+
+function serializeHighlightEntry(entry) {
+  return {
+    text: entry.text,
+    scope: entry.scope,
+    createdAt: entry.createdAt || Date.now(),
+  };
+}
+
+function addHighlightForQuestion(questionId, selectedText, scope = "question") {
   const text = String(selectedText || "").trim();
   if (!text) return false;
   const store = getHighlightStore();
-  const current = Array.isArray(store[questionId]) ? store[questionId] : [];
-  store[questionId] = [...new Set([...current, text])];
+  const current = Array.isArray(store[questionId])
+    ? store[questionId].map(normalizeHighlightEntry).filter(Boolean)
+    : [];
+  const entry = serializeHighlightEntry({ text, scope });
+  const exists = current.some((item) => item.text === entry.text && item.scope === entry.scope);
+  store[questionId] = exists ? current.map(serializeHighlightEntry) : [...current.map(serializeHighlightEntry), entry];
   saveHighlightStore(store);
   return true;
 }
@@ -205,9 +236,12 @@ function clearHighlightsForQuestion(questionId) {
   saveHighlightStore(store);
 }
 
-function renderQuestionTextWithHighlights(questionText, highlights) {
-  const text = String(questionText || "");
-  const terms = [...new Set((highlights || []).map((item) => String(item || "").trim()).filter(Boolean))]
+function renderTextWithHighlights(value, highlights, scope) {
+  const text = String(value || "");
+  const terms = [...new Set((highlights || [])
+    .filter((item) => item.scope === scope)
+    .map((item) => item.text)
+    .filter(Boolean))]
     .sort((a, b) => b.length - a.length);
   if (!terms.length) return escapeHtml(text);
 
@@ -226,51 +260,106 @@ function renderQuestionTextWithHighlights(questionText, highlights) {
   return html;
 }
 
-function getQuestionTextElement(questionId) {
-  return document.querySelector(`.question-title[data-question-id="${questionId}"]`);
+function renderQuestionWithHighlights(q, highlights) {
+  return renderTextWithHighlights(t(q, "question"), highlights, "question");
 }
 
-function isSelectionInsideQuestionText(selection, questionTextElement) {
-  if (!selection || selection.isCollapsed || !questionTextElement || selection.rangeCount === 0) return false;
-  return questionTextElement.contains(selection.getRangeAt(0).commonAncestorContainer);
+function renderOptionsWithHighlights(text, highlights) {
+  return renderTextWithHighlights(text, highlights, "option");
+}
+
+function renderExplanationWithHighlights(text, highlights) {
+  return renderTextWithHighlights(text, highlights, "explanation");
+}
+
+function renderOriginalExplanationWithHighlights(text, highlights) {
+  return renderTextWithHighlights(text, highlights, "original");
+}
+
+function getHighlightRootElement(questionId = "") {
+  if (questionId) return document.querySelector(`.question-highlight-root[data-question-id="${questionId}"]`);
+  return document.querySelector(".question-highlight-root[data-question-id]");
+}
+
+function isSelectionInsideHighlightRoot(selection, root) {
+  if (!selection || selection.isCollapsed || !root || selection.rangeCount === 0) return false;
+  const range = selection.getRangeAt(0);
+  return root.contains(range.commonAncestorContainer)
+    && root.contains(range.startContainer)
+    && root.contains(range.endContainer);
+}
+
+function getClosestHighlightScopeElement(node) {
+  const element = node?.nodeType === Node.ELEMENT_NODE ? node : node?.parentNode;
+  return element?.nodeType === Node.ELEMENT_NODE ? element.closest("[data-highlight-scope]") : null;
+}
+
+function getSelectionScope(selection) {
+  if (!selection || selection.rangeCount === 0) return "";
+  const range = selection.getRangeAt(0);
+  const startScope = getClosestHighlightScopeElement(range.startContainer);
+  const endScope = getClosestHighlightScopeElement(range.endContainer);
+  if (!startScope || !endScope || startScope !== endScope) return "";
+  return startScope.dataset.highlightScope || "";
 }
 
 function clearCachedQuestionSelection() {
+  clearCachedHighlightSelection();
+}
+
+function clearCachedHighlightSelection() {
   cachedQuestionSelection = null;
 }
 
-function captureCurrentQuestionSelection() {
+function captureCurrentHighlightSelection() {
   const selection = window.getSelection();
-  const activeQuestionText = document.querySelector(".question-title[data-question-id]");
-  if (!isSelectionInsideQuestionText(selection, activeQuestionText)) {
+  const root = getHighlightRootElement();
+  if (!isSelectionInsideHighlightRoot(selection, root)) {
     if (selection && !selection.isCollapsed && selection.rangeCount > 0) clearCachedQuestionSelection();
     return false;
   }
   const selectedText = selection.toString().trim();
   if (!selectedText) return false;
+  const scope = getSelectionScope(selection);
+  if (!scope) return false;
   cachedQuestionSelection = {
-    questionId: activeQuestionText.dataset.questionId,
+    questionId: root.dataset.questionId,
     selectedText,
+    scope,
     timestamp: Date.now(),
   };
   return true;
 }
 
-function getSelectionFromQuestionTitle(questionId) {
+function captureCurrentQuestionSelection() {
+  return captureCurrentHighlightSelection();
+}
+
+function getSelectionFromHighlightRoot(questionId) {
   const selection = window.getSelection();
-  const container = getQuestionTextElement(questionId);
-  if (!isSelectionInsideQuestionText(selection, container)) return "";
-  return selection.toString().trim();
+  const root = getHighlightRootElement(questionId);
+  if (!isSelectionInsideHighlightRoot(selection, root)) return null;
+  const selectedText = selection.toString().trim();
+  const scope = getSelectionScope(selection);
+  if (!selectedText || !scope) return null;
+  return { selectedText, scope };
+}
+
+function getCachedHighlightSelection(questionId) {
+  if (!cachedQuestionSelection || cachedQuestionSelection.questionId !== questionId) return null;
+  return {
+    selectedText: cachedQuestionSelection.selectedText,
+    scope: cachedQuestionSelection.scope || "question",
+  };
 }
 
 function getCachedQuestionSelection(questionId) {
-  if (!cachedQuestionSelection || cachedQuestionSelection.questionId !== questionId) return "";
-  return cachedQuestionSelection.selectedText;
+  return getCachedHighlightSelection(questionId)?.selectedText || "";
 }
 
 function renderHighlightActions(q) {
   return `
-    <div class="highlight-actions" aria-label="题干高亮操作">
+    <div class="highlight-actions" aria-label="当前题目高亮操作">
       <button class="ghost-button" type="button" onpointerdown="handleHighlightButtonPointerDown(event, '${q.id}')" ontouchstart="handleHighlightButtonPointerDown(event, '${q.id}')" onclick="handleHighlightButtonClick(event, '${q.id}')">高亮选中文字</button>
       <button class="ghost-button" type="button" onclick="clearQuestionHighlights('${q.id}')">清除本题高亮</button>
       <p class="highlight-hint" aria-live="polite">${escapeHtml(highlightHint)}</p>
@@ -279,14 +368,20 @@ function renderHighlightActions(q) {
 }
 
 function saveSelectedQuestionHighlight(questionId) {
-  const selectedText = getSelectionFromQuestionTitle(questionId) || getCachedQuestionSelection(questionId);
-  if (!selectedText) {
-    highlightHint = "请先选中题干文字。";
+  const currentSelection = getSelectionFromHighlightRoot(questionId);
+  const cachedSelection = getCachedHighlightSelection(questionId);
+  const selection = currentSelection || cachedSelection;
+  if (!selection?.selectedText) {
+    highlightHint = "请先选中当前题目内容里的文字。";
     renderQuiz();
     return;
   }
-  addHighlightForQuestion(questionId, selectedText);
-  highlightHint = "已保存题干高亮。";
+  if (!addHighlightForQuestion(questionId, selection.selectedText, selection.scope)) {
+    highlightHint = "请先选中当前题目内容里的文字。";
+    renderQuiz();
+    return;
+  }
+  highlightHint = "已保存本题高亮。";
   clearCachedQuestionSelection();
   window.getSelection()?.removeAllRanges();
   renderQuiz();
@@ -1277,7 +1372,6 @@ function renderQuiz() {
   const answer = getPracticeAnswer(q.id);
   const options = t(q, "options");
   const loc = getQuestionLocation(q);
-  const questionText = t(q, "question");
   const highlights = getHighlightsForQuestion(q.id);
   rememberCurrentQuestion(q);
   app.classList.toggle("has-sticky-actions", Boolean(answer));
@@ -1299,12 +1393,14 @@ function renderQuiz() {
       <p class="question-order-note">上面的“当前练习第 X / Y 题”是本次练习范围内顺序，不是全题库题号。</p>
       ${renderQuestionIdSearch(q.paper)}
       ${renderQuestionJumpControl()}
-      <h2 class="question-title" data-question-id="${q.id}" onmouseup="captureCurrentQuestionSelection()" ontouchend="captureCurrentQuestionSelection()" onkeyup="captureCurrentQuestionSelection()">${renderQuestionTextWithHighlights(questionText, highlights)}</h2>
       ${renderHighlightActions(q)}
-      <div class="option-list">
-        ${"ABCD".split("").map((letter) => renderOption(q, letter, options[letter], answer)).join("")}
+      <div class="question-highlight-root" data-question-id="${q.id}" onmouseup="captureCurrentQuestionSelection()" ontouchend="captureCurrentQuestionSelection()" onkeyup="captureCurrentQuestionSelection()">
+        <h2 class="question-title" data-highlight-scope="question">${renderQuestionWithHighlights(q, highlights)}</h2>
+        <div class="option-list">
+          ${"ABCD".split("").map((letter) => renderOption(q, letter, options[letter], answer, highlights)).join("")}
+        </div>
+        ${answer ? renderResult(q, answer, highlights) : ""}
       </div>
-      ${answer ? renderResult(q, answer) : ""}
       <div class="button-row">
         <button class="ghost-button" onclick="prevQuestion()">上一题</button>
         <button class="button" onclick="nextQuestion()">下一题</button>
@@ -1386,20 +1482,20 @@ function focusQuestionJumpInput() {
   });
 }
 
-function renderOption(q, letter, text, answer) {
+function renderOption(q, letter, text, answer, highlights) {
   let cls = "option";
   if (answer) {
     if (letter === q.correct_answer) cls += " correct";
     if (letter === answer.selected && !answer.isCorrect) cls += " wrong";
   }
   return `
-    <button class="${cls}" onclick="chooseAnswer('${q.id}', '${letter}')" ${answer ? "disabled" : ""}>
-      <span class="letter">${letter}</span>${escapeHtml(text)}
+    <button class="${cls}" data-highlight-scope="option" onclick="chooseAnswer('${q.id}', '${letter}')" ${answer ? "disabled" : ""}>
+      <span class="letter">${letter}</span>${renderOptionsWithHighlights(text, highlights)}
     </button>
   `;
 }
 
-function renderResult(q, answer) {
+function renderResult(q, answer, highlights) {
   const explanationStatus = getExplanationStatus(q.simple_explanation);
   const wrongCount = getWrongCount(q.id);
   const simpleExplanation = String(q.simple_explanation || "").trim();
@@ -1413,10 +1509,10 @@ function renderResult(q, answer) {
         <strong>大白话解析</strong>
         ${explanationStatus ? `<span class="explanation-status ${explanationStatus.className}">${explanationStatus.label}</span>` : ""}
       </div>
-      <pre>${escapeHtml(explanationText)}</pre>
+      <pre data-highlight-scope="explanation">${renderExplanationWithHighlights(explanationText, highlights)}</pre>
       <details class="original-explanation">
         <summary>原始 PDF 解析</summary>
-        <pre>${escapeHtml(q.original_explanation || "暂无原始解析。")}</pre>
+        <pre data-highlight-scope="original">${renderOriginalExplanationWithHighlights(q.original_explanation || "暂无原始解析。", highlights)}</pre>
       </details>
     </section>
   `;

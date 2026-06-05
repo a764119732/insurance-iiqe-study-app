@@ -901,6 +901,11 @@ button {
   padding: 16px;
 }
 
+.question-highlight-root {
+  -webkit-user-select: text;
+  user-select: text;
+}
+
 .question-title {
   margin: 10px 0 14px;
   font-size: 18px;
@@ -928,7 +933,9 @@ button {
   flex-wrap: wrap;
   align-items: center;
   gap: 8px;
-  margin: -2px 0 14px;
+  margin: 12px 0 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
   touch-action: manipulation;
 }
 
@@ -954,6 +961,8 @@ button {
   text-align: left;
   color: var(--ink);
   background: var(--surface);
+  -webkit-user-select: text;
+  user-select: text;
 }
 
 .option.correct {
