@@ -20,6 +20,8 @@
   - 普通练习和模拟考试 session 本地持久化
   - 按题号搜索 / 跳转，例如 `P1-553`、`P3-123`，并显示章节、小节和题内顺序
   - Light / Dark 护眼主题切换，刷新后保留上次选择
+  - 题干文字本地 highlight 标注，按当前浏览器 profile 保存
+  - “继续上次题目”跳转，回到本浏览器最近打开/做过的题
   - 学习记录导出 / 导入
   - 简体 / 繁体切换
   - 大白话解析优先展示，原始 PDF 解析默认折叠
@@ -53,6 +55,8 @@
 - 所有用户数据只保存在当前浏览器的 `localStorage`。
 - 使用的命名空间为 `iiqeStudyApp:v1`。
 - 主题偏好使用 `iiqeStudyApp:theme`，只保存 `light` 或 `dark`。
+- 题干 highlight 使用 `iiqeStudyApp:questionHighlights:v1`。
+- 最近打开/做过的题使用 `iiqeStudyApp:lastQuestion:v1`。
 - 错题、收藏、练习进度、统计、模拟考试历史、导入导出记录都属于本地浏览器数据。
 - 本项目没有后端，不会上传学习记录，也不支持跨设备自动同步。
 - 多个用户访问同一个 GitHub Pages 地址时，彼此只能读取同一份静态题库；学习数据由各自浏览器隔离。

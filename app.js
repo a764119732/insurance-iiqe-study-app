@@ -7,6 +7,8 @@ const STORAGE_NAMESPACE = "iiqeStudyApp:v1";
 const STORAGE_KEY = `${STORAGE_NAMESPACE}:state`;
 const LEGACY_STORAGE_KEY = "iiqe-study-state-v1";
 const THEME_STORAGE_KEY = "iiqeStudyApp:theme";
+const QUESTION_HIGHLIGHTS_STORAGE_KEY = "iiqeStudyApp:questionHighlights:v1";
+const LAST_QUESTION_STORAGE_KEY = "iiqeStudyApp:lastQuestion:v1";
 const EXAM_DATE = new Date("2026-06-12T00:00:00+08:00");
 const app = document.querySelector("#app");
 const navItems = [...document.querySelectorAll(".nav-item")];
@@ -23,6 +25,7 @@ let questionIdSearch = {
   resultId: null,
   message: "",
 };
+let highlightHint = "";
 let activeExam = null;
 let examTimer = null;
 
@@ -166,6 +169,153 @@ function escapeHtml(value) {
     .replaceAll("'", "&#039;");
 }
 
+function getHighlightStore() {
+  try {
+    const parsed = JSON.parse(localStorage.getItem(QUESTION_HIGHLIGHTS_STORAGE_KEY) || "{}");
+    return parsed && typeof parsed === "object" && !Array.isArray(parsed) ? parsed : {};
+  } catch {
+    return {};
+  }
+}
+
+function saveHighlightStore(store) {
+  localStorage.setItem(QUESTION_HIGHLIGHTS_STORAGE_KEY, JSON.stringify(store));
+}
+
+function getHighlightsForQuestion(questionId) {
+  const values = getHighlightStore()[questionId];
+  if (!Array.isArray(values)) return [];
+  return [...new Set(values.map((item) => String(item || "").trim()).filter(Boolean))];
+}
+
+function addHighlightForQuestion(questionId, selectedText) {
+  const text = String(selectedText || "").trim();
+  if (!text) return false;
+  const store = getHighlightStore();
+  const current = Array.isArray(store[questionId]) ? store[questionId] : [];
+  store[questionId] = [...new Set([...current, text])];
+  saveHighlightStore(store);
+  return true;
+}
+
+function clearHighlightsForQuestion(questionId) {
+  const store = getHighlightStore();
+  delete store[questionId];
+  saveHighlightStore(store);
+}
+
+function renderQuestionTextWithHighlights(questionText, highlights) {
+  const text = String(questionText || "");
+  const terms = [...new Set((highlights || []).map((item) => String(item || "").trim()).filter(Boolean))]
+    .sort((a, b) => b.length - a.length);
+  if (!terms.length) return escapeHtml(text);
+
+  let html = "";
+  let index = 0;
+  while (index < text.length) {
+    const match = terms.find((term) => text.startsWith(term, index));
+    if (match) {
+      html += `<mark class="question-highlight">${escapeHtml(match)}</mark>`;
+      index += match.length;
+      continue;
+    }
+    html += escapeHtml(text[index]);
+    index += 1;
+  }
+  return html;
+}
+
+function getSelectionFromQuestionTitle(questionId) {
+  const selection = window.getSelection();
+  const container = document.querySelector(`.question-title[data-question-id="${questionId}"]`);
+  if (!selection || selection.isCollapsed || !container || selection.rangeCount === 0) return "";
+  const range = selection.getRangeAt(0);
+  if (!container.contains(range.commonAncestorContainer)) return "";
+  return selection.toString().trim();
+}
+
+function renderHighlightActions(q) {
+  return `
+    <div class="highlight-actions" aria-label="题干高亮操作">
+      <button class="ghost-button" type="button" onclick="highlightSelectedQuestionText('${q.id}')">高亮选中文字</button>
+      <button class="ghost-button" type="button" onclick="clearQuestionHighlights('${q.id}')">清除本题高亮</button>
+      <p class="highlight-hint" aria-live="polite">${escapeHtml(highlightHint)}</p>
+    </div>
+  `;
+}
+
+function highlightSelectedQuestionText(questionId) {
+  const selectedText = getSelectionFromQuestionTitle(questionId);
+  if (!selectedText) {
+    highlightHint = "请先选中当前题干中的文字。";
+    renderQuiz();
+    return;
+  }
+  addHighlightForQuestion(questionId, selectedText);
+  highlightHint = "已保存题干高亮。";
+  window.getSelection()?.removeAllRanges();
+  renderQuiz();
+}
+
+function clearQuestionHighlights(questionId) {
+  clearHighlightsForQuestion(questionId);
+  highlightHint = "已清除本题高亮。";
+  renderQuiz();
+}
+
+function getLastQuestionRecord() {
+  try {
+    const parsed = JSON.parse(localStorage.getItem(LAST_QUESTION_STORAGE_KEY) || "null");
+    return parsed && typeof parsed === "object" ? parsed : null;
+  } catch {
+    return null;
+  }
+}
+
+function saveLastQuestionRecord(q) {
+  if (!q?.id || !q?.paper) return;
+  localStorage.setItem(LAST_QUESTION_STORAGE_KEY, JSON.stringify({
+    questionId: q.id,
+    paper: q.paper,
+    updatedAt: Date.now(),
+  }));
+}
+
+function clearLastQuestionRecord() {
+  localStorage.removeItem(LAST_QUESTION_STORAGE_KEY);
+}
+
+function rememberCurrentQuestion(q) {
+  saveLastQuestionRecord(q);
+  state.lastQuestionId = q.id;
+}
+
+function jumpToLastQuestion() {
+  highlightHint = "";
+  const record = getLastQuestionRecord();
+  const questionId = record?.questionId || state.lastQuestionId;
+  if (!questionId) {
+    questionIdSearch.message = "暂无上次做题记录。";
+    render();
+    return;
+  }
+  const q = byId.get(questionId);
+  if (!q) {
+    clearLastQuestionRecord();
+    state.lastQuestionId = null;
+    saveState();
+    questionIdSearch.message = "上次做题记录已失效，已清除。";
+    render();
+    return;
+  }
+  questionIdSearch = {
+    query: q.id,
+    resultId: q.id,
+    message: "已找到上次做题记录。",
+  };
+  enterQuestionIdPractice(q.id);
+}
+
 function getContextPaper(fallback = null) {
   if (fallback === "P1" || fallback === "P3") return fallback;
   if (route === "quiz") {
@@ -226,6 +376,7 @@ function renderQuestionIdSearch(contextPaper = null) {
             aria-describedby="questionIdSearchMessage"
           />
           <button class="button" type="submit">搜索</button>
+          <button class="ghost-button" type="button" onclick="jumpToLastQuestion()">继续上次题目</button>
         </div>
       </form>
       <p class="question-id-message" id="questionIdSearchMessage" aria-live="polite">${escapeHtml(questionIdSearch.message)}</p>
@@ -1018,8 +1169,16 @@ function openSingleQuestion(id) {
 }
 
 function continueLast() {
-  if (!state.lastQuestionId) return;
-  const last = byId.get(state.lastQuestionId);
+  const record = getLastQuestionRecord();
+  const lastQuestionId = record?.questionId || state.lastQuestionId;
+  if (!lastQuestionId) return;
+  const last = byId.get(lastQuestionId);
+  if (!last) {
+    clearLastQuestionRecord();
+    state.lastQuestionId = null;
+    saveState();
+    return;
+  }
   const ids = questions.filter((q) => q.paper === last.paper).map((q) => q.id);
   startPracticeSession({
     paper: last.paper,
@@ -1062,6 +1221,9 @@ function renderQuiz() {
   const answer = getPracticeAnswer(q.id);
   const options = t(q, "options");
   const loc = getQuestionLocation(q);
+  const questionText = t(q, "question");
+  const highlights = getHighlightsForQuestion(q.id);
+  rememberCurrentQuestion(q);
   app.classList.toggle("has-sticky-actions", Boolean(answer));
   app.innerHTML = `
     <article class="question-card">
@@ -1081,7 +1243,8 @@ function renderQuiz() {
       <p class="question-order-note">上面的“当前练习第 X / Y 题”是本次练习范围内顺序，不是全题库题号。</p>
       ${renderQuestionIdSearch(q.paper)}
       ${renderQuestionJumpControl()}
-      <h2 class="question-title">${escapeHtml(t(q, "question"))}</h2>
+      <h2 class="question-title" data-question-id="${q.id}">${renderQuestionTextWithHighlights(questionText, highlights)}</h2>
+      ${renderHighlightActions(q)}
       <div class="option-list">
         ${"ABCD".split("").map((letter) => renderOption(q, letter, options[letter], answer)).join("")}
       </div>
@@ -1133,6 +1296,7 @@ function renderQuizStickyActions(q) {
 
 function jumpToQuestion(event) {
   event.preventDefault();
+  highlightHint = "";
   const input = document.querySelector("#questionJumpInput");
   const raw = String(input?.value || "").trim();
   const total = quizQueue.length;
@@ -1227,6 +1391,7 @@ function getExplanationStatus(simpleExplanation = "") {
 function chooseAnswer(id, selected) {
   const q = byId.get(id);
   quizJumpMessage = "";
+  highlightHint = "";
   const isCorrect = selected === q.correct_answer;
   const old = state.answers[id];
   const answerRecord = {
@@ -1287,6 +1452,7 @@ function toggleFavorite(id) {
 
 function prevQuestion() {
   quizJumpMessage = "";
+  highlightHint = "";
   quizIndex = Math.max(0, quizIndex - 1);
   persistPracticeSession();
   renderQuiz();
@@ -1294,6 +1460,7 @@ function prevQuestion() {
 
 function nextQuestion() {
   quizJumpMessage = "";
+  highlightHint = "";
   quizIndex = Math.min(quizQueue.length - 1, quizIndex + 1);
   persistPracticeSession();
   renderQuiz();
