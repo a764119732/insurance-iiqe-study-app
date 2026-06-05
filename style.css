@@ -905,6 +905,8 @@ button {
   margin: 10px 0 14px;
   font-size: 18px;
   line-height: 1.55;
+  -webkit-user-select: text;
+  user-select: text;
 }
 
 .question-highlight {
@@ -927,6 +929,7 @@ button {
   align-items: center;
   gap: 8px;
   margin: -2px 0 14px;
+  touch-action: manipulation;
 }
 
 .highlight-hint {

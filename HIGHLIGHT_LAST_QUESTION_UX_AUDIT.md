@@ -82,3 +82,49 @@
 - 如果同一句文字在同一题干中重复出现，会高亮全部匹配项。
 - 如果题干文本后续被题库维护改写，旧 highlight 字符串可能无法再匹配。
 - 不支持跨设备、跨浏览器 profile 或账号同步。
+
+## 12. Mobile Safari Highlight Fix
+
+### 原因判断
+
+- 旧实现只在点击“高亮选中文字”按钮时读取 `window.getSelection()`。
+- iOS Safari 在触屏点击按钮时可能先让按钮获得焦点，导致原本的题干选区被清空。
+- 因此手机端 Safari 可能读不到题干选中文字，表现为点击按钮后没有高亮。
+
+### 修复方案
+
+- 新增最近一次有效题干选区缓存 `cachedQuestionSelection`。
+- 在题干容器 `.question-title[data-question-id]` 上通过 `mouseup`、`touchend`、`keyup` 捕获选区。
+- 在 `document` 上通过 `selectionchange`、`keyup` 补充捕获选区。
+- 缓存只接受属于当前题干容器的 selection，不接受选项、解析或其他区域文字。
+- 点击高亮按钮时优先使用当前 selection；如果 Safari 已清空 selection，则回退使用缓存。
+- 高亮按钮增加 `pointerdown` / `touchstart` 处理并 `preventDefault()`，尽量避免按钮抢焦点清空选区。
+- 切换题目、跳题、答题、开始/继续练习时清空缓存，避免上一题选区被用于当前题。
+
+### 样式补充
+
+- `.question-title` 增加 `-webkit-user-select: text` 和 `user-select: text`。
+- `.highlight-actions` 增加 `touch-action: manipulation`。
+
+### 本轮测试要求
+
+- Desktop Chrome: `P1-553` 选中题干文字后高亮正常。
+- Desktop Chrome: 清除本题高亮正常。
+- iOS Safari 需要用户手动验证：长按选择题干文字，点击高亮按钮，高亮应出现并在刷新后保留。
+- Dark 模式下高亮仍需可读。
+- 答题、解析、题号跳转、继续上次题目不应受影响。
+
+### 本轮已运行检查
+
+- `node --check app.js`: pass。
+- `git diff -- data/paper1_questions.json data/paper3_questions.json`: 无输出。
+- JSON parse: P1 = 1391, P3 = 807, total = 2198, ID 连续。
+- `git diff --check`: pass。
+- 编码哨兵检查: 未命中问号占位、替换符或 mojibake 标记。
+- diff 范围：只涉及 `app.js`、`style.css`、`HIGHLIGHT_LAST_QUESTION_UX_AUDIT.md`。
+- Specificity Repair / Batch 文件：未修改。
+
+### 本轮未运行检查
+
+- iOS Safari 无法在当前自动化环境中运行，需要用户手动在 iPhone Safari 验证。
+- 本地浏览器自动交互测试未完成；此前 in-app Browser 访问 localhost 被 `ERR_BLOCKED_BY_CLIENT` 拦截，本轮本地短时 server 方式也未形成稳定可访问的自动化浏览器测试环境。

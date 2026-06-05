@@ -26,6 +26,7 @@ let questionIdSearch = {
   message: "",
 };
 let highlightHint = "";
+let cachedQuestionSelection = null;
 let activeExam = null;
 let examTimer = null;
 
@@ -225,40 +226,91 @@ function renderQuestionTextWithHighlights(questionText, highlights) {
   return html;
 }
 
+function getQuestionTextElement(questionId) {
+  return document.querySelector(`.question-title[data-question-id="${questionId}"]`);
+}
+
+function isSelectionInsideQuestionText(selection, questionTextElement) {
+  if (!selection || selection.isCollapsed || !questionTextElement || selection.rangeCount === 0) return false;
+  return questionTextElement.contains(selection.getRangeAt(0).commonAncestorContainer);
+}
+
+function clearCachedQuestionSelection() {
+  cachedQuestionSelection = null;
+}
+
+function captureCurrentQuestionSelection() {
+  const selection = window.getSelection();
+  const activeQuestionText = document.querySelector(".question-title[data-question-id]");
+  if (!isSelectionInsideQuestionText(selection, activeQuestionText)) {
+    if (selection && !selection.isCollapsed && selection.rangeCount > 0) clearCachedQuestionSelection();
+    return false;
+  }
+  const selectedText = selection.toString().trim();
+  if (!selectedText) return false;
+  cachedQuestionSelection = {
+    questionId: activeQuestionText.dataset.questionId,
+    selectedText,
+    timestamp: Date.now(),
+  };
+  return true;
+}
+
 function getSelectionFromQuestionTitle(questionId) {
   const selection = window.getSelection();
-  const container = document.querySelector(`.question-title[data-question-id="${questionId}"]`);
-  if (!selection || selection.isCollapsed || !container || selection.rangeCount === 0) return "";
-  const range = selection.getRangeAt(0);
-  if (!container.contains(range.commonAncestorContainer)) return "";
+  const container = getQuestionTextElement(questionId);
+  if (!isSelectionInsideQuestionText(selection, container)) return "";
   return selection.toString().trim();
+}
+
+function getCachedQuestionSelection(questionId) {
+  if (!cachedQuestionSelection || cachedQuestionSelection.questionId !== questionId) return "";
+  return cachedQuestionSelection.selectedText;
 }
 
 function renderHighlightActions(q) {
   return `
     <div class="highlight-actions" aria-label="题干高亮操作">
-      <button class="ghost-button" type="button" onclick="highlightSelectedQuestionText('${q.id}')">高亮选中文字</button>
+      <button class="ghost-button" type="button" onpointerdown="handleHighlightButtonPointerDown(event, '${q.id}')" ontouchstart="handleHighlightButtonPointerDown(event, '${q.id}')" onclick="handleHighlightButtonClick(event, '${q.id}')">高亮选中文字</button>
       <button class="ghost-button" type="button" onclick="clearQuestionHighlights('${q.id}')">清除本题高亮</button>
       <p class="highlight-hint" aria-live="polite">${escapeHtml(highlightHint)}</p>
     </div>
   `;
 }
 
-function highlightSelectedQuestionText(questionId) {
-  const selectedText = getSelectionFromQuestionTitle(questionId);
+function saveSelectedQuestionHighlight(questionId) {
+  const selectedText = getSelectionFromQuestionTitle(questionId) || getCachedQuestionSelection(questionId);
   if (!selectedText) {
-    highlightHint = "请先选中当前题干中的文字。";
+    highlightHint = "请先选中题干文字。";
     renderQuiz();
     return;
   }
   addHighlightForQuestion(questionId, selectedText);
   highlightHint = "已保存题干高亮。";
+  clearCachedQuestionSelection();
   window.getSelection()?.removeAllRanges();
   renderQuiz();
 }
 
+function highlightSelectedQuestionText(questionId) {
+  saveSelectedQuestionHighlight(questionId);
+}
+
+function handleHighlightButtonPointerDown(event, questionId) {
+  event.preventDefault();
+  captureCurrentQuestionSelection();
+  saveSelectedQuestionHighlight(questionId);
+}
+
+function handleHighlightButtonClick(event, questionId) {
+  event.preventDefault();
+  captureCurrentQuestionSelection();
+  saveSelectedQuestionHighlight(questionId);
+}
+
 function clearQuestionHighlights(questionId) {
   clearHighlightsForQuestion(questionId);
+  clearCachedQuestionSelection();
   highlightHint = "已清除本题高亮。";
   renderQuiz();
 }
@@ -672,6 +724,8 @@ function continuePracticeSession(existing) {
   quizQueue = [...existing.questionIds];
   quizIndex = existing.currentIndex;
   quizJumpMessage = "";
+  clearCachedQuestionSelection();
+  highlightHint = "";
   const answers = hydratePracticeSessionAnswers(existing);
   state.sessions.practice = {
     ...existing,
@@ -687,6 +741,8 @@ function beginPracticeSession({ paper, mode, scopeKey, validIds, startIndex = 0 
   quizQueue = validIds;
   quizIndex = Math.min(Math.max(startIndex, 0), validIds.length - 1);
   quizJumpMessage = "";
+  clearCachedQuestionSelection();
+  highlightHint = "";
   state.sessions.practice = {
     paper,
     mode,
@@ -1243,7 +1299,7 @@ function renderQuiz() {
       <p class="question-order-note">上面的“当前练习第 X / Y 题”是本次练习范围内顺序，不是全题库题号。</p>
       ${renderQuestionIdSearch(q.paper)}
       ${renderQuestionJumpControl()}
-      <h2 class="question-title" data-question-id="${q.id}">${renderQuestionTextWithHighlights(questionText, highlights)}</h2>
+      <h2 class="question-title" data-question-id="${q.id}" onmouseup="captureCurrentQuestionSelection()" ontouchend="captureCurrentQuestionSelection()" onkeyup="captureCurrentQuestionSelection()">${renderQuestionTextWithHighlights(questionText, highlights)}</h2>
       ${renderHighlightActions(q)}
       <div class="option-list">
         ${"ABCD".split("").map((letter) => renderOption(q, letter, options[letter], answer)).join("")}
@@ -1297,6 +1353,7 @@ function renderQuizStickyActions(q) {
 function jumpToQuestion(event) {
   event.preventDefault();
   highlightHint = "";
+  clearCachedQuestionSelection();
   const input = document.querySelector("#questionJumpInput");
   const raw = String(input?.value || "").trim();
   const total = quizQueue.length;
@@ -1392,6 +1449,7 @@ function chooseAnswer(id, selected) {
   const q = byId.get(id);
   quizJumpMessage = "";
   highlightHint = "";
+  clearCachedQuestionSelection();
   const isCorrect = selected === q.correct_answer;
   const old = state.answers[id];
   const answerRecord = {
@@ -1453,6 +1511,7 @@ function toggleFavorite(id) {
 function prevQuestion() {
   quizJumpMessage = "";
   highlightHint = "";
+  clearCachedQuestionSelection();
   quizIndex = Math.max(0, quizIndex - 1);
   persistPracticeSession();
   renderQuiz();
@@ -1461,6 +1520,7 @@ function prevQuestion() {
 function nextQuestion() {
   quizJumpMessage = "";
   highlightHint = "";
+  clearCachedQuestionSelection();
   quizIndex = Math.min(quizQueue.length - 1, quizIndex + 1);
   persistPracticeSession();
   renderQuiz();
@@ -1836,6 +1896,8 @@ function shuffle(items) {
 }
 
 navItems.forEach((item) => item.addEventListener("click", () => setRoute(item.dataset.route)));
+document.addEventListener("selectionchange", captureCurrentQuestionSelection);
+document.addEventListener("keyup", captureCurrentQuestionSelection);
 applyTheme(getSavedTheme(), { persist: false });
 themeToggle?.addEventListener("click", toggleTheme);
 document.querySelector("#themeRefresh").addEventListener("click", loadQuestions);
