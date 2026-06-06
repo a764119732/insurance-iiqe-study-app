@@ -9,6 +9,8 @@ const LEGACY_STORAGE_KEY = "iiqe-study-state-v1";
 const THEME_STORAGE_KEY = "iiqeStudyApp:theme";
 const QUESTION_HIGHLIGHTS_STORAGE_KEY = "iiqeStudyApp:questionHighlights:v1";
 const LAST_QUESTION_STORAGE_KEY = "iiqeStudyApp:lastQuestion:v1";
+const DAILY_STATS_STORAGE_KEY = "iiqeStudyApp:dailyStats:v1";
+const CUSTOM_EXPLANATIONS_STORAGE_KEY = "iiqeStudyApp:customExplanations:v1";
 const EXAM_DATE = new Date("2026-06-12T00:00:00+08:00");
 const app = document.querySelector("#app");
 const navItems = [...document.querySelectorAll(".nav-item")];
@@ -735,6 +737,115 @@ function getStats() {
   };
 }
 
+function getLocalDateKey() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
+
+function getDailyStatsStore() {
+  try {
+    const raw = localStorage.getItem(DAILY_STATS_STORAGE_KEY);
+    const parsed = JSON.parse(raw || "{}");
+    return parsed && typeof parsed === "object" && !Array.isArray(parsed) ? parsed : {};
+  } catch {
+    return {};
+  }
+}
+
+function saveDailyStatsStore(store) {
+  try {
+    localStorage.setItem(DAILY_STATS_STORAGE_KEY, JSON.stringify(store));
+  } catch {
+    // Storage full or unavailable; daily stats are non-critical.
+  }
+}
+
+function recordDailyAnswer(questionId, paper) {
+  try {
+    if (!questionId || !paper) return;
+    const dateKey = getLocalDateKey();
+    const store = getDailyStatsStore();
+    const day = store[dateKey] || { total: 0, P1: 0, P3: 0, answeredIds: [] };
+    if (day.answeredIds.includes(questionId)) return;
+    day.answeredIds.push(questionId);
+    day.total = (day.total || 0) + 1;
+    if (paper === "P1") day.P1 = (day.P1 || 0) + 1;
+    if (paper === "P3") day.P3 = (day.P3 || 0) + 1;
+    store[dateKey] = day;
+    saveDailyStatsStore(store);
+  } catch {
+    // Non-critical; never block the quiz flow.
+  }
+}
+
+function getLastNDaysStats(n) {
+  const store = getDailyStatsStore();
+  const days = [];
+  for (let i = 0; i < n; i++) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+    const entry = store[key] || { total: 0, P1: 0, P3: 0 };
+    days.push({ date: key, ...entry });
+  }
+  return days;
+}
+
+function clearDailyStats() {
+  try {
+    localStorage.removeItem(DAILY_STATS_STORAGE_KEY);
+  } catch {
+    // Non-critical.
+  }
+}
+
+function renderDailyStats() {
+  const today = getLocalDateKey();
+  const store = getDailyStatsStore();
+  const todayStats = store[today] || { total: 0, P1: 0, P3: 0 };
+  const last7 = getLastNDaysStats(7);
+  return `
+    <section class="daily-stats card">
+      <div class="daily-stats-header">
+        <h2>每日做题统计</h2>
+        <button class="ghost-button" onclick="if(confirm('确定要清除每日做题统计吗？这不会影响答题记录和错题。')){clearDailyStats();render();}">清除统计</button>
+      </div>
+      <div class="stats-row">
+        <div class="stat">
+          <strong>${todayStats.total}</strong>
+          <span>今日做题</span>
+        </div>
+        <div class="stat">
+          <strong>${todayStats.P1}</strong>
+          <span>今日 P1</span>
+        </div>
+        <div class="stat">
+          <strong>${todayStats.P3}</strong>
+          <span>今日 P3</span>
+        </div>
+      </div>
+      <details class="daily-stats-week">
+        <summary>最近 7 天</summary>
+        <table class="daily-stats-table">
+          <thead>
+            <tr><th>日期</th><th>总题数</th><th>P1</th><th>P3</th></tr>
+          </thead>
+          <tbody>
+            ${last7.map((d) => `
+              <tr class="${d.date === today ? "today-row" : ""}">
+                <td>${d.date === today ? "今天" : d.date}</td>
+                <td>${d.total}</td>
+                <td>${d.P1}</td>
+                <td>${d.P3}</td>
+              </tr>
+            `).join("")}
+          </tbody>
+        </table>
+      </details>
+    </section>
+  `;
+}
+
 function ensureDefaultExpandedChapters() {
   let changed = false;
   Object.keys(SYLLABUS).forEach((paper) => {
@@ -989,6 +1100,7 @@ function renderHome() {
       <p class="hero-note">掌握度按“已答进度 × 正确率”估算，用来判断当前复习推进程度。</p>
     </section>
 
+    ${renderDailyStats()}
     ${renderQuestionIdSearch(paper)}
 
     <section class="quick-grid" aria-label="快捷入口">
@@ -1495,12 +1607,97 @@ function renderOption(q, letter, text, answer, highlights) {
   `;
 }
 
+function getCustomExplanationStore() {
+  try {
+    const raw = localStorage.getItem(CUSTOM_EXPLANATIONS_STORAGE_KEY);
+    const parsed = JSON.parse(raw || "{}");
+    return parsed && typeof parsed === "object" && !Array.isArray(parsed) ? parsed : {};
+  } catch {
+    return {};
+  }
+}
+
+function saveCustomExplanationStore(store) {
+  try {
+    localStorage.setItem(CUSTOM_EXPLANATIONS_STORAGE_KEY, JSON.stringify(store));
+  } catch {
+    // Storage full or unavailable; non-critical.
+  }
+}
+
+function getCustomExplanation(questionId) {
+  const store = getCustomExplanationStore();
+  const entry = store[questionId];
+  if (entry && typeof entry.text === "string" && entry.text.trim()) return entry;
+  return null;
+}
+
+function saveCustomExplanation(questionId, text) {
+  const store = getCustomExplanationStore();
+  store[questionId] = { text: String(text || ""), updatedAt: Date.now() };
+  saveCustomExplanationStore(store);
+}
+
+function clearCustomExplanation(questionId) {
+  const store = getCustomExplanationStore();
+  delete store[questionId];
+  saveCustomExplanationStore(store);
+}
+
+function getDisplayExplanation(q) {
+  const custom = getCustomExplanation(q.id);
+  if (custom) return { text: custom.text, isCustom: true };
+  const simpleExplanation = String(q.simple_explanation || "").trim();
+  const fallbackMemoryTip = !simpleExplanation && q.memory_tip ? String(q.memory_tip).trim() : "";
+  return { text: simpleExplanation || fallbackMemoryTip || "暂无大白话解析。", isCustom: false };
+}
+
+function enterExplanationEditMode(questionId) {
+  const q = byId.get(questionId);
+  if (!q) return;
+  const disp = getDisplayExplanation(q);
+  const textarea = document.querySelector("#explanationEditTextarea");
+  if (!textarea) return;
+  textarea.value = disp.text;
+  textarea.style.display = "";
+  document.querySelector("#explanationEditActions")?.setAttribute("style", "display:flex;gap:8px;margin-top:8px;");
+  document.querySelector("#explanationDisplay")?.setAttribute("style", "display:none;");
+  document.querySelector("#explanationViewActions")?.setAttribute("style", "display:none;");
+}
+
+function saveExplanationEdit(questionId) {
+  const textarea = document.querySelector("#explanationEditTextarea");
+  if (!textarea) return;
+  const text = textarea.value.trim();
+  if (text) {
+    saveCustomExplanation(questionId, text);
+  } else {
+    clearCustomExplanation(questionId);
+  }
+  cancelExplanationEdit(questionId);
+  renderQuiz();
+}
+
+function cancelExplanationEdit(questionId) {
+  const textarea = document.querySelector("#explanationEditTextarea");
+  if (textarea) textarea.style.display = "none";
+  document.querySelector("#explanationEditActions")?.setAttribute("style", "display:none;");
+  document.querySelector("#explanationDisplay")?.setAttribute("style", "");
+  document.querySelector("#explanationViewActions")?.setAttribute("style", "");
+}
+
+function restoreDefaultExplanation(questionId) {
+  if (confirm("确定要恢复默认解析吗？你的本地自定义解析将被删除，且不可撤销。")) {
+    clearCustomExplanation(questionId);
+    renderQuiz();
+  }
+}
+
 function renderResult(q, answer, highlights) {
   const explanationStatus = getExplanationStatus(q.simple_explanation);
   const wrongCount = getWrongCount(q.id);
-  const simpleExplanation = String(q.simple_explanation || "").trim();
-  const fallbackMemoryTip = !simpleExplanation && q.memory_tip ? String(q.memory_tip).trim() : "";
-  const explanationText = simpleExplanation || fallbackMemoryTip || "暂无大白话解析。";
+  const disp = getDisplayExplanation(q);
+  const explanationText = disp.text;
   return `
     <section class="result-box" id="quizResult">
       <h3>${answer.isCorrect ? "回答正确" : "回答错误"}，正确答案：${q.correct_answer}</h3>
@@ -1508,8 +1705,20 @@ function renderResult(q, answer, highlights) {
       <div class="explanation-header">
         <strong>大白话解析</strong>
         ${explanationStatus ? `<span class="explanation-status ${explanationStatus.className}">${explanationStatus.label}</span>` : ""}
+        ${disp.isCustom ? `<span class="custom-explanation-badge">本地自定义解析</span>` : ""}
       </div>
-      <pre data-highlight-scope="explanation">${renderExplanationWithHighlights(explanationText, highlights)}</pre>
+      <div id="explanationDisplay">
+        <pre data-highlight-scope="explanation">${renderExplanationWithHighlights(explanationText, highlights)}</pre>
+      </div>
+      <textarea id="explanationEditTextarea" class="explanation-edit-textarea" style="display:none;" rows="6"></textarea>
+      <div id="explanationEditActions" style="display:none;">
+        <button class="button" onclick="saveExplanationEdit('${q.id}')">保存</button>
+        <button class="ghost-button" onclick="cancelExplanationEdit('${q.id}')">取消</button>
+      </div>
+      <div id="explanationViewActions" class="explanation-view-actions">
+        <button class="ghost-button" onclick="enterExplanationEditMode('${q.id}')">编辑我的解析</button>
+        ${disp.isCustom ? `<button class="ghost-button" onclick="restoreDefaultExplanation('${q.id}')">恢复默认解析</button>` : ""}
+      </div>
       <details class="original-explanation">
         <summary>原始 PDF 解析</summary>
         <pre data-highlight-scope="original">${renderOriginalExplanationWithHighlights(q.original_explanation || "暂无原始解析。", highlights)}</pre>
@@ -1557,6 +1766,7 @@ function chooseAnswer(id, selected) {
     updatedAt: new Date().toISOString(),
   };
   state.answers[id] = answerRecord;
+  try { recordDailyAnswer(id, q.paper); } catch {}
   if (state.sessions?.practice?.questionIds?.includes(id)) {
     state.sessions.practice.answers = {
       ...(state.sessions.practice.answers || {}),

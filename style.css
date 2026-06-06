@@ -1212,3 +1212,101 @@ button {
     justify-content: space-between;
   }
 }
+
+/* === Daily Stats === */
+
+.daily-stats {
+  margin-top: 16px;
+}
+
+.daily-stats-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.daily-stats-header h2 {
+  margin: 0;
+}
+
+.daily-stats-week {
+  margin-top: 12px;
+}
+
+.daily-stats-week summary {
+  cursor: pointer;
+  font-size: 14px;
+  color: var(--navy);
+  font-weight: 600;
+}
+
+.daily-stats-table {
+  width: 100%;
+  margin-top: 8px;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.daily-stats-table th,
+.daily-stats-table td {
+  padding: 6px 8px;
+  text-align: center;
+  border-bottom: 1px solid var(--border);
+}
+
+.daily-stats-table th {
+  font-weight: 600;
+  color: var(--topbar-muted);
+  font-size: 13px;
+}
+
+.daily-stats-table .today-row {
+  background: var(--primary-soft);
+  font-weight: 600;
+}
+
+/* === Custom Explanation === */
+
+.custom-explanation-badge {
+  display: inline-block;
+  font-size: 12px;
+  padding: 2px 8px;
+  border-radius: 12px;
+  background: #fef3c7;
+  color: #92400e;
+  margin-left: 8px;
+}
+
+[data-theme="dark"] .custom-explanation-badge {
+  background: #78350f;
+  color: #fde68a;
+}
+
+.explanation-view-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+  flex-wrap: wrap;
+}
+
+.explanation-edit-textarea {
+  width: 100%;
+  min-height: 120px;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 15px;
+  line-height: 1.6;
+  font-family: inherit;
+  resize: vertical;
+  background: var(--bg);
+  color: var(--text);
+  box-sizing: border-box;
+}
+
+.explanation-edit-textarea:focus {
+  outline: none;
+  border-color: var(--navy);
+  box-shadow: 0 0 0 3px var(--primary-soft);
+}
