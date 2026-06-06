@@ -1,23 +1,24 @@
 # Project A Next Action - Current
 
-## [2026-06-06] Batch 8 Rewrite Plan 已生成，等待用户授权写入
-
-Batch 8 candidate scan 和 rewrite plan 已生成，80 题待写入。
+## [2026-06-06] Task #2 完成 + Batch 8A 已推送，Batch 8B/8C/8D 待继续
 
 **当前状态**：
-- Batch 6A/6B/6C 和 Batch 7A/7B/7C/7D 已全部推送。
-- HEAD: `8c74cce`，main 与 origin/main 对齐。
+- HEAD: `438583e`，main 与 origin/main 对齐。
 - JSON/UI 干净。
-- Batch 8 rewrite plan 80 题（P1=65, P3=15），全部 allow_rewrite。
-- 未写入 JSON。
+- Batch 8A（前 20 题）已写入、审计、抽查、提交推送。
+- Task #2（每日做题统计 + 解析框可编辑）已实现并推送。
+  - 新增 localStorage keys：`iiqeStudyApp:dailyStats:v1`、`iiqeStudyApp:customExplanations:v1`
+  - 修改：`app.js`、`style.css`，新增 `LEARNING_TOOLS_UX_AUDIT.md`
+- Batch 8 rewrite plan 剩余 60 题（P1 65 题中 Batch 8A 已用约 11 题，剩余约 54 题；P3 15 题中已用 9 题，剩余约 6 题）。
 
 **下一步建议**：
-1. 用户授权后执行 Batch 8A（前 20 题）写入。
-2. 建议分 4 个子批次：8A(20) → 8B(20) → 8C(20) → 8D(20)。
+1. 如需继续 Specificity Repair，执行 Batch 8B（20 题）写入。
+2. 用户手动测试 Task #2 两个新功能。
 3. 每批写入后必须做 safety check + spotcheck。
-4. 全部完成后统一 commit/push。
 
-**安全边界**：不提交 PROJECT_A_MEMORY.md、.claude/settings.local.json、FULL_EXPLANATION_BATCH1_USER_ACCEPTANCE_CHECK.md。不修改 UI。不修改保护字段。
+**安全边界**：不提交 PROJECT_A_MEMORY.md、.claude/settings.local.json、FULL_EXPLANATION_BATCH1_USER_ACCEPTANCE_CHECK.md。不修改保护字段。
+
+## [2026-06-06] Batch 8 Rewrite Plan 已生成，等待用户授权写入（Batch 8A 已完成）
 
 ## [2026-06-04] 组合题第 3 段两步写法规则补充
 

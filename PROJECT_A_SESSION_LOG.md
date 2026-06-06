@@ -1,5 +1,19 @@
 # Project A Session Log - Latest Entry
 
+## [2026-06-06] Batch 8A 收尾 + Task #2 每日统计与解析编辑实现
+
+- 目标：收尾 Batch 8A（之前已写入未提交）→ 实现 Task #2 两个前端功能。
+- Batch 8A 收尾：20 题 simple_explanation 4 段式重写，分 2 个 commit 提交推送。
+  - Commit 1 `d0af952`：plan + JSON write（4 文件）
+  - Commit 2 `e5e85ca`：audit + spotcheck + 房屋管理（6 文件）
+- Task #2 实现：首页每日做题统计 + 解析框本地可编辑。
+  - 新增 localStorage key：`iiqeStudyApp:dailyStats:v1`、`iiqeStudyApp:customExplanations:v1`
+  - 修改文件：`app.js` (+218)、`style.css` (+98)
+  - 新增文件：`LEARNING_TOOLS_UX_AUDIT.md`
+  - Commit `438583e` 已推送。
+- 题库 JSON 零修改。UI 文件零修改（index.html 未改）。
+- 工作区干净，main ↔ origin/main 对齐。
+
 ## [2026-06-06] Specificity Repair Batch 8 Candidate Scan + Rewrite Plan 生成
 
 - 目标：只读恢复 → 生成 Batch 8 candidate scan → 生成 rewrite plan。

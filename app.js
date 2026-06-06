@@ -1919,6 +1919,7 @@ function renderMine() {
       <div class="button-row">
         <button class="ghost-button" onclick="toggleScript()">显示：${state.settings.script === "simplified" ? "简体" : "繁体"}</button>
         <button class="ghost-button" onclick="exportRecord()">导出记录 JSON</button>
+        <button class="ghost-button" onclick="exportCustomExplanations()">导出自定义解析</button>
       </div>
       <div class="button-row">
         <input class="file-input" type="file" accept="application/json" onchange="importRecord(event)" />
@@ -1979,6 +1980,40 @@ function exportRecord() {
   const link = document.createElement("a");
   link.href = url;
   link.download = `iiqe-study-record-${new Date().toISOString().slice(0, 10)}.json`;
+  link.click();
+  URL.revokeObjectURL(url);
+}
+
+function exportCustomExplanations() {
+  const store = getCustomExplanationStore();
+  const cleaned = {};
+  let count = 0;
+  for (const [id, entry] of Object.entries(store)) {
+    if (!/^P[13]-\d+$/.test(id)) continue;
+    const text = (entry && entry.text || "").trim();
+    if (!text) continue;
+    cleaned[id] = {
+      text: text,
+      updatedAt: (entry && typeof entry.updatedAt === "number") ? entry.updatedAt : Date.now()
+    };
+    count++;
+  }
+  if (count === 0) {
+    alert("暂无自定义解析可导出。");
+    return;
+  }
+  const output = {
+    exportedAt: new Date().toISOString(),
+    count: count,
+    source: "iiqeStudyApp:customExplanations:v1",
+    explanations: cleaned
+  };
+  const blob = new Blob([JSON.stringify(output, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  const dateStr = new Date().toISOString().slice(0, 10);
+  link.download = `iiqe-custom-explanations-${dateStr}.json`;
   link.click();
   URL.revokeObjectURL(url);
 }
