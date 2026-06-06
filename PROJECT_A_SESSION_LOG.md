@@ -1,5 +1,22 @@
 # Project A Session Log - Latest Entry
 
+## [2026-06-06] Specificity Repair Batch 8 Candidate Scan + Rewrite Plan 生成
+
+- 目标：只读恢复 → 生成 Batch 8 candidate scan → 生成 rewrite plan。
+- 确认 Batch 6A/6B/6C 和 Batch 7A/7B/7C/7D 已全部提交推送。
+- HEAD: `8c74cce`，main 与 origin/main 对齐。
+- JSON parse: P1=1391, P3=807, Total=2198, ID 连续。
+- JSON/UI diff: 干净。
+- 扫描结果：剩余 2033 题仍有质量问题（internal_note_pollution=1795, missing_four_section=1775, traditional_chinese=1527, etc.）。
+- 选择 80 题作为 Batch 8 候选：P1=65, P3=15。
+- Golden sample 分布：general_teaching_style=49, P1-244/P1-245=16, P1-1291=9, P1-553=3, P1-279=3。
+- 所有计划检查通过：duplicate=0, overlap with Batch 6=0, overlap with Batch 7=0, excluded overlap=0。
+- 创建文件：`SPECIFICITY_REPAIR_BATCH8_CANDIDATE_SCAN.md`、`SPECIFICITY_REPAIR_BATCH8_REWRITE_PLAN.md`。
+- 创建+删除临时文件：`tmp_batch8_scan.js`。
+- 未修改：JSON、UI、README、extract_questions.py、PDF、离线版、sharedFiles。
+- 未暂存、未 commit、未 push。
+- 未执行任何 Batch 写入。
+
 ## [2026-06-05] Specificity Repair Batch 6A 写入完成
 
 - 目标：从 Batch 6 计划（60 题）中取前 20 题作为 Batch 6A，执行 4 段式解析重写并完成质量审计。
