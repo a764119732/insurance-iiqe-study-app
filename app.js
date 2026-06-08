@@ -192,7 +192,12 @@ function getHighlightsForQuestion(questionId) {
     .map(normalizeHighlightEntry)
     .filter(Boolean)
     .filter((entry, index, entries) =>
-      entries.findIndex((item) => item.text === entry.text && item.scope === entry.scope) === index
+      entries.findIndex((item) =>
+        item.text === entry.text &&
+        item.scope === entry.scope &&
+        item.offsetStart === entry.offsetStart &&
+        item.offsetEnd === entry.offsetEnd
+      ) === index
     );
 }
 
@@ -207,27 +212,47 @@ function normalizeHighlightEntry(item) {
   const allowedScopes = new Set(["question", "option", "explanation", "original"]);
   const scope = allowedScopes.has(item.scope) ? item.scope : "question";
   const createdAt = Number.isFinite(item.createdAt) ? item.createdAt : null;
-  return { text, scope, createdAt };
+  const offsetStart = Number.isFinite(item.offsetStart) ? item.offsetStart : null;
+  const offsetEnd = Number.isFinite(item.offsetEnd) ? item.offsetEnd : null;
+  const hasValidOffsets = offsetStart !== null && offsetEnd !== null && offsetEnd > offsetStart && offsetStart >= 0;
+  return {
+    text,
+    scope,
+    createdAt,
+    offsetStart: hasValidOffsets ? offsetStart : null,
+    offsetEnd: hasValidOffsets ? offsetEnd : null,
+  };
 }
 
 function serializeHighlightEntry(entry) {
-  return {
+  const result = {
     text: entry.text,
     scope: entry.scope,
     createdAt: entry.createdAt || Date.now(),
   };
+  if (entry.offsetStart !== null && entry.offsetStart !== undefined && entry.offsetEnd !== null && entry.offsetEnd !== undefined) {
+    result.offsetStart = entry.offsetStart;
+    result.offsetEnd = entry.offsetEnd;
+  }
+  return result;
 }
 
-function addHighlightForQuestion(questionId, selectedText, scope = "question") {
+function addHighlightForQuestion(questionId, selectedText, scope = "question", offsetStart = null, offsetEnd = null) {
   const text = String(selectedText || "").trim();
   if (!text) return false;
   const store = getHighlightStore();
   const current = Array.isArray(store[questionId])
     ? store[questionId].map(normalizeHighlightEntry).filter(Boolean)
     : [];
-  const entry = serializeHighlightEntry({ text, scope });
-  const exists = current.some((item) => item.text === entry.text && item.scope === entry.scope);
-  store[questionId] = exists ? current.map(serializeHighlightEntry) : [...current.map(serializeHighlightEntry), entry];
+  const entry = serializeHighlightEntry({ text, scope, offsetStart, offsetEnd });
+  const exists = current.some((item) =>
+    item.text === entry.text &&
+    item.scope === entry.scope &&
+    item.offsetStart === (entry.offsetStart !== undefined ? entry.offsetStart : null) &&
+    item.offsetEnd === (entry.offsetEnd !== undefined ? entry.offsetEnd : null)
+  );
+  if (exists) return true;
+  store[questionId] = [...current.map(serializeHighlightEntry), entry];
   saveHighlightStore(store);
   return true;
 }
@@ -240,25 +265,72 @@ function clearHighlightsForQuestion(questionId) {
 
 function renderTextWithHighlights(value, highlights, scope) {
   const text = String(value || "");
-  const terms = [...new Set((highlights || [])
-    .filter((item) => item.scope === scope)
-    .map((item) => item.text)
-    .filter(Boolean))]
-    .sort((a, b) => b.length - a.length);
-  if (!terms.length) return escapeHtml(text);
+  const scopeHighlights = (highlights || []).filter((item) => item.scope === scope);
+  if (!scopeHighlights.length) return escapeHtml(text);
 
-  let html = "";
-  let index = 0;
-  while (index < text.length) {
-    const match = terms.find((term) => text.startsWith(term, index));
-    if (match) {
-      html += `<mark class="question-highlight">${escapeHtml(match)}</mark>`;
-      index += match.length;
-      continue;
-    }
-    html += escapeHtml(text[index]);
-    index += 1;
+  // Collect highlight regions
+  const regions = [];
+
+  // 1) Offset-based highlights (new): precise instance-level
+  const offsetItems = scopeHighlights.filter((h) => h.offsetStart !== null && h.offsetStart !== undefined);
+  for (const h of offsetItems) {
+    let start = h.offsetStart;
+    let end = h.offsetEnd;
+    // Boundary protection
+    if (!Number.isFinite(start) || !Number.isFinite(end)) continue;
+    start = Math.max(0, Math.min(start, text.length));
+    end = Math.max(0, Math.min(end, text.length));
+    if (end <= start) continue;
+    regions.push({ start, end });
   }
+
+  // 2) Legacy text-based highlights: only for items without offset (backward compat)
+  const legacyTerms = scopeHighlights
+    .filter((h) => h.offsetStart === null || h.offsetStart === undefined)
+    .map((h) => h.text)
+    .filter(Boolean);
+  const uniqueLegacy = [...new Set(legacyTerms)].sort((a, b) => b.length - a.length);
+  if (uniqueLegacy.length) {
+    let idx = 0;
+    while (idx < text.length) {
+      const match = uniqueLegacy.find((term) => text.startsWith(term, idx));
+      if (match) {
+        regions.push({ start: idx, end: idx + match.length });
+        idx += match.length;
+      } else {
+        idx += 1;
+      }
+    }
+  }
+
+  // Merge overlapping regions
+  regions.sort((a, b) => a.start - b.start || a.end - b.end);
+  const merged = [];
+  for (const r of regions) {
+    if (merged.length && r.start <= merged[merged.length - 1].end) {
+      merged[merged.length - 1].end = Math.max(merged[merged.length - 1].end, r.end);
+    } else {
+      merged.push({ start: r.start, end: r.end });
+    }
+  }
+
+  if (!merged.length) return escapeHtml(text);
+
+  // Build HTML from merged regions
+  let html = "";
+  let cursor = 0;
+  for (const r of merged) {
+    if (r.start > cursor) {
+      html += escapeHtml(text.slice(cursor, r.start));
+    } else if (r.start < cursor) {
+      // Skip overlapping portion already covered
+      if (r.end <= cursor) continue;
+      r.start = cursor;
+    }
+    html += `<mark class="question-highlight">${escapeHtml(text.slice(r.start, r.end))}</mark>`;
+    cursor = r.end;
+  }
+  html += escapeHtml(text.slice(cursor));
   return html;
 }
 
@@ -313,6 +385,25 @@ function clearCachedHighlightSelection() {
   cachedQuestionSelection = null;
 }
 
+function getTextOffsetsInScope(range, scopeElement) {
+  if (!range || !scopeElement) return null;
+  const walker = document.createTreeWalker(scopeElement, NodeFilter.SHOW_TEXT, null, false);
+  let totalOffset = 0;
+  let startOffset = -1;
+  let endOffset = -1;
+  while (walker.nextNode()) {
+    const node = walker.currentNode;
+    const len = node.textContent.length;
+    if (node === range.startContainer) startOffset = totalOffset + range.startOffset;
+    if (node === range.endContainer) endOffset = totalOffset + range.endOffset;
+    totalOffset += len;
+  }
+  if (startOffset < 0 || endOffset < 0) return null;
+  if (endOffset <= startOffset) return null;
+  if (startOffset >= totalOffset || endOffset > totalOffset) return null;
+  return { startOffset, endOffset };
+}
+
 function captureCurrentHighlightSelection() {
   const selection = window.getSelection();
   const root = getHighlightRootElement();
@@ -324,10 +415,15 @@ function captureCurrentHighlightSelection() {
   if (!selectedText) return false;
   const scope = getSelectionScope(selection);
   if (!scope) return false;
+  const range = selection.getRangeAt(0);
+  const scopeElement = getClosestHighlightScopeElement(range.startContainer);
+  const offsets = scopeElement ? getTextOffsetsInScope(range, scopeElement) : null;
   cachedQuestionSelection = {
     questionId: root.dataset.questionId,
     selectedText,
     scope,
+    offsetStart: offsets ? offsets.startOffset : null,
+    offsetEnd: offsets ? offsets.endOffset : null,
     timestamp: Date.now(),
   };
   return true;
@@ -344,7 +440,15 @@ function getSelectionFromHighlightRoot(questionId) {
   const selectedText = selection.toString().trim();
   const scope = getSelectionScope(selection);
   if (!selectedText || !scope) return null;
-  return { selectedText, scope };
+  const range = selection.getRangeAt(0);
+  const scopeElement = getClosestHighlightScopeElement(range.startContainer);
+  const offsets = scopeElement ? getTextOffsetsInScope(range, scopeElement) : null;
+  return {
+    selectedText,
+    scope,
+    offsetStart: offsets ? offsets.startOffset : null,
+    offsetEnd: offsets ? offsets.endOffset : null,
+  };
 }
 
 function getCachedHighlightSelection(questionId) {
@@ -352,6 +456,8 @@ function getCachedHighlightSelection(questionId) {
   return {
     selectedText: cachedQuestionSelection.selectedText,
     scope: cachedQuestionSelection.scope || "question",
+    offsetStart: cachedQuestionSelection.offsetStart,
+    offsetEnd: cachedQuestionSelection.offsetEnd,
   };
 }
 
@@ -378,7 +484,7 @@ function saveSelectedQuestionHighlight(questionId) {
     renderQuiz();
     return;
   }
-  if (!addHighlightForQuestion(questionId, selection.selectedText, selection.scope)) {
+  if (!addHighlightForQuestion(questionId, selection.selectedText, selection.scope, selection.offsetStart, selection.offsetEnd)) {
     highlightHint = "请先选中当前题目内容里的文字。";
     renderQuiz();
     return;
