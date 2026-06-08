@@ -1324,12 +1324,12 @@ function renderSectionNode(paper, chapter, section, index, chapterStats) {
         <span class="section-dot"></span>
         <div>
           <strong>第${index + 1}节：${section}</strong>
-          <span>${canPractice ? `正确率 ${stats.accuracy}%` : "待分类"}</span>
+          <span>${canPractice ? `正确率 ${stats.accuracy}%` : "暂无题目"}</span>
         </div>
       </div>
       <div class="section-right">
-        <span>${canPractice ? `${stats.done}/${stats.total}` : "待分类"}</span>
-        <button class="${canPractice ? "text-button" : "text-button disabled"}" ${canPractice ? "" : "disabled"} onclick="startSectionPractice('${paper}', '${sectionId}')">练习</button>
+        <span>${canPractice ? `${stats.done}/${stats.total}` : "暂无题目"}</span>
+        <button class="${canPractice ? "text-button" : "text-button disabled"}" ${canPractice ? "" : "disabled"} onclick="startSectionPractice('${paper}', '${sectionId}')">${canPractice ? "练习" : "暂无题目"}</button>
       </div>
     </div>
   `;
