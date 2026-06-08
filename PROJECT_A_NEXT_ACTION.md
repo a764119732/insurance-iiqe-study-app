@@ -1,6 +1,37 @@
 # Project A Next Action - Current
 
-## [2026-06-06] Task #2 完成 + Batch 8A 已推送，Batch 8B/8C/8D 待继续
+## [2026-06-08] 🟢 下一步：Specificity Repair Batch 9B 写入
+
+**当前状态**：
+- HEAD: `80ea34f`，main 与 origin/main 对齐。
+- 工作区仍有交接文件待处理；`config.toml` 为本地 Claude Code 权限配置，默认不提交。
+- Batch 8A/8B/8C/8D 全部完成并推送。
+- Batch 9A 已完成并推送（`8d5fdc8`）。
+- 高亮 option scope 碰撞修复已完成（`8499eb9` + `0e8414f`）。
+- 首页无题小节文案修复已完成并推送（`80ea34f`）。
+- JSON parse: P1=1391, P3=807, Total=2198, ID 连续。
+
+**下一步建议**：
+1. 用户阅读 `SPECIFICITY_REPAIR_BATCH9B_REWRITE_PLAN.md` 后授权写入。
+2. 执行 Batch 9B 写入（20 题：P1=16, P3=4）。
+3. 写入后 safety check + spotcheck 50%（10 题）。
+4. 用户授权后 commit/push。
+
+**Batch 9B 候选 ID**：
+P1-081, P1-090, P1-091, P1-092, P1-120, P1-121, P1-122, P1-128,
+P1-185, P1-198, P1-236, P1-239, P1-418, P1-434, P1-500, P1-951,
+P3-015, P3-023, P3-349, P3-802
+
+**安全边界**：不提交 PROJECT_A_MEMORY.md、.claude/settings.local.json、FULL_EXPLANATION_BATCH1_USER_ACCEPTANCE_CHECK.md。不修改保护字段。组合题 P3-023 需特殊关注（组合+反向叠加）。
+
+---
+
+## [2026-06-06] ⚠️ 已过期 — Batch 8B/8C/8D 和 Batch 9A 已全部完成
+以下建议已过期。Batch 8B（`4180a07`）、8C（`48ea1b2`）、8D（`3b4a41d`）、9A（`8d5fdc8`）均已提交推送。不要继续按 Batch 8B 执行。
+
+---
+
+## [2026-06-06] Task #2 完成 + Batch 8A 已推送，Batch 8B/8C/8D 待继续（已过期）
 
 **当前状态**：
 - HEAD: `438583e`，main 与 origin/main 对齐。

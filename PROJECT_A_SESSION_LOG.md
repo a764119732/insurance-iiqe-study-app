@@ -1,5 +1,35 @@
 # Project A Session Log - Latest Entry
 
+## [2026-06-08] 首页无题小节文案修复已提交推送
+
+- 目标：修复首页/章节学习地图中无题小节的误导文案。
+- Commit `80ea34f`：Clarify empty section practice state。
+- 修复内容：`renderSectionNode()` 中无题小节状态从“待分类”改为“暂无题目”，disabled 按钮文字从“练习”改为“暂无题目”。
+- 浏览器验证通过：P1 4.12、P3 4.5-4.12 均显示“暂无题目”，按钮 disabled；有题小节仍显示“练习”且可进入练习。
+- 题库 JSON、`data/syllabus.js`、`index.html`、`style.css`、`extract_questions.py` 零修改。
+- main 与 origin/main 已对齐。
+- Batch 9B 写入计划仍保留为下一步依据：`SPECIFICITY_REPAIR_BATCH9B_REWRITE_PLAN.md`。
+
+## [2026-06-08] 高亮 option scope 碰撞修复提交推送 + Batch 9B 计划生成
+
+- 目标：提交推送高亮修复 + 只读验证 Batch 9B 候选并生成重写计划。
+- 高亮修复提交推送：
+  - Commit `0e8414f`：Fix option highlight scope collisions（app.js +53/-10）
+  - 修复内容：每个选项独立 `data-highlight-scope="option-0/1/2/3"`，替代共享 `scope="option"`
+  - 浏览器验证通过：P1-705 C 选项"剩余"只高亮 C；A/C/D 互不污染；切题、刷新恢复正常
+  - 题库 JSON 零修改
+- Batch 9B 计划生成：
+  - 只读核验 20 候选 ID：全部存在、0 重复、0 与已完成批次重叠（8A/8B/8C/8D/9A）
+  - P1=16, P3=4
+  - 题型分布：普通概念 9、反向 6、合约法 4、组合+反向 1（P3-023 高风险）
+  - 黄金样本：general_teaching_style 10、P1-244/P1-245 6、P1-1291 5、P1-279 1
+  - 创建文件：`SPECIFICITY_REPAIR_BATCH9B_REWRITE_PLAN.md`
+  - 更新文件：`PROJECT_A_NEXT_ACTION.md`、`PROJECT_A_SESSION_LOG.md`
+  - 临时文件已清理：`tmp_batch9b_verify.js`、`tmp_batch9b_analyze.js`
+- 未修改：题库 JSON、app.js、style.css、index.html、syllabus.js、extract_questions.py、PDF、离线版、sharedFiles
+- 未暂存、未 commit、未 push
+- 下一步：等待用户授权后执行 Batch 9B 写入
+
 ## [2026-06-06] Batch 8A 收尾 + Task #2 每日统计与解析编辑实现
 
 - 目标：收尾 Batch 8A（之前已写入未提交）→ 实现 Task #2 两个前端功能。
