@@ -175,7 +175,53 @@ function escapeHtml(value) {
 function getHighlightStore() {
   try {
     const parsed = JSON.parse(localStorage.getItem(QUESTION_HIGHLIGHTS_STORAGE_KEY) || "{}");
-    return parsed && typeof parsed === "object" && !Array.isArray(parsed) ? parsed : {};
+    const store = parsed && typeof parsed === "object" && !Array.isArray(parsed) ? parsed : {};
+    // Schema v2: offsets are calculated against pure text containers (option text
+    // without the choice-letter prefix). Pre-v2 offsets included the A/B/C/D letter
+    // in the scope's textContent, so they are shifted — strip and fall back to
+    // legacy text-based matching for those entries.
+    if (!store._schemaVersion || store._schemaVersion < 2) {
+      for (const key of Object.keys(store)) {
+        if (key.startsWith("_")) continue;
+        if (Array.isArray(store[key])) {
+          for (const entry of store[key]) {
+            if (entry && typeof entry === "object") {
+              delete entry.offsetStart;
+              delete entry.offsetEnd;
+            }
+          }
+        }
+      }
+      store._schemaVersion = 2;
+      try {
+        localStorage.setItem(QUESTION_HIGHLIGHTS_STORAGE_KEY, JSON.stringify(store));
+      } catch {
+        // Storage full; non-critical upgrade.
+      }
+    }
+    // Schema v3: scope "option" entries (pre-per-option-scope) collide across all
+    // options because every option span shared the same scope name.  Remove them
+    // so they don't pollute rendering; only keep question/explanation/original and
+    // the new per-option scopes (option-0, option-1, option-2, option-3).
+    if (store._schemaVersion < 3) {
+      for (const key of Object.keys(store)) {
+        if (key.startsWith("_")) continue;
+        if (Array.isArray(store[key])) {
+          store[key] = store[key].filter((entry) => {
+            if (!entry || typeof entry !== "object") return false;
+            return entry.scope !== "option";
+          });
+          if (store[key].length === 0) delete store[key];
+        }
+      }
+      store._schemaVersion = 3;
+      try {
+        localStorage.setItem(QUESTION_HIGHLIGHTS_STORAGE_KEY, JSON.stringify(store));
+      } catch {
+        // Storage full; non-critical upgrade.
+      }
+    }
+    return store;
   } catch {
     return {};
   }
@@ -210,7 +256,7 @@ function normalizeHighlightEntry(item) {
   const text = String(item.text || "").trim();
   if (!text) return null;
   const allowedScopes = new Set(["question", "option", "explanation", "original"]);
-  const scope = allowedScopes.has(item.scope) ? item.scope : "question";
+  const scope = (allowedScopes.has(item.scope) || /^option-\d+$/.test(item.scope)) ? item.scope : "question";
   const createdAt = Number.isFinite(item.createdAt) ? item.createdAt : null;
   const offsetStart = Number.isFinite(item.offsetStart) ? item.offsetStart : null;
   const offsetEnd = Number.isFinite(item.offsetEnd) ? item.offsetEnd : null;
@@ -336,10 +382,6 @@ function renderTextWithHighlights(value, highlights, scope) {
 
 function renderQuestionWithHighlights(q, highlights) {
   return renderTextWithHighlights(t(q, "question"), highlights, "question");
-}
-
-function renderOptionsWithHighlights(text, highlights) {
-  return renderTextWithHighlights(text, highlights, "option");
 }
 
 function renderExplanationWithHighlights(text, highlights) {
@@ -1615,7 +1657,7 @@ function renderQuiz() {
       <div class="question-highlight-root" data-question-id="${q.id}" onmouseup="captureCurrentQuestionSelection()" ontouchend="captureCurrentQuestionSelection()" onkeyup="captureCurrentQuestionSelection()">
         <h2 class="question-title" data-highlight-scope="question">${renderQuestionWithHighlights(q, highlights)}</h2>
         <div class="option-list">
-          ${"ABCD".split("").map((letter) => renderOption(q, letter, options[letter], answer, highlights)).join("")}
+          ${"ABCD".split("").map((letter, i) => renderOption(q, letter, options[letter], answer, highlights, i)).join("")}
         </div>
         ${answer ? renderResult(q, answer, highlights) : ""}
       </div>
@@ -1700,15 +1742,16 @@ function focusQuestionJumpInput() {
   });
 }
 
-function renderOption(q, letter, text, answer, highlights) {
+function renderOption(q, letter, text, answer, highlights, optionIndex) {
+  const scope = `option-${optionIndex != null ? optionIndex : letter}`;
   let cls = "option";
   if (answer) {
     if (letter === q.correct_answer) cls += " correct";
     if (letter === answer.selected && !answer.isCorrect) cls += " wrong";
   }
   return `
-    <button class="${cls}" data-highlight-scope="option" onclick="chooseAnswer('${q.id}', '${letter}')" ${answer ? "disabled" : ""}>
-      <span class="letter">${letter}</span>${renderOptionsWithHighlights(text, highlights)}
+    <button class="${cls}" onclick="chooseAnswer('${q.id}', '${letter}')" ${answer ? "disabled" : ""}>
+      <span class="letter">${letter}</span><span data-highlight-scope="${scope}">${renderTextWithHighlights(text, highlights, scope)}</span>
     </button>
   `;
 }
