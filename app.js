@@ -510,7 +510,7 @@ function getCachedQuestionSelection(questionId) {
 function renderHighlightActions(q) {
   return `
     <div class="highlight-actions" aria-label="当前题目高亮操作">
-      <button class="ghost-button" type="button" onpointerdown="handleHighlightButtonPointerDown(event, '${q.id}')" ontouchstart="handleHighlightButtonPointerDown(event, '${q.id}')" onclick="handleHighlightButtonClick(event, '${q.id}')">高亮选中文字</button>
+      <button class="ghost-button" type="button" onpointerdown="handleHighlightButtonPointerDown(event, '${q.id}')" ontouchstart="handleHighlightButtonPointerDown(event, '${q.id}')" onclick="handleHighlightButtonClick(event, '${q.id}')">高亮选中文字（快捷键 I）</button>
       <button class="ghost-button" type="button" onclick="clearQuestionHighlights('${q.id}')">清除本题高亮</button>
       <p class="highlight-hint" aria-live="polite">${escapeHtml(highlightHint)}</p>
     </div>
@@ -550,6 +550,24 @@ function handleHighlightButtonPointerDown(event, questionId) {
 function handleHighlightButtonClick(event, questionId) {
   event.preventDefault();
   captureCurrentQuestionSelection();
+  saveSelectedQuestionHighlight(questionId);
+}
+
+function handleHighlightShortcut(event) {
+  if (event.key !== "i" && event.key !== "I") return;
+  if (event.ctrlKey || event.metaKey || event.altKey) return;
+  var activeEl = document.activeElement;
+  if (activeEl) {
+    var tag = activeEl.tagName.toLowerCase();
+    if (tag === "input" || tag === "textarea" || tag === "select") return;
+    if (activeEl.isContentEditable) return;
+    if (activeEl.closest("[contenteditable]")) return;
+  }
+  var root = getHighlightRootElement();
+  if (!root) return;
+  var questionId = root.dataset.questionId;
+  if (!questionId) return;
+  captureCurrentHighlightSelection();
   saveSelectedQuestionHighlight(questionId);
 }
 
@@ -2388,6 +2406,7 @@ function shuffle(items) {
 navItems.forEach((item) => item.addEventListener("click", () => setRoute(item.dataset.route)));
 document.addEventListener("selectionchange", captureCurrentQuestionSelection);
 document.addEventListener("keyup", captureCurrentQuestionSelection);
+document.addEventListener("keydown", handleHighlightShortcut);
 applyTheme(getSavedTheme(), { persist: false });
 themeToggle?.addEventListener("click", toggleTheme);
 document.querySelector("#themeRefresh").addEventListener("click", loadQuestions);
