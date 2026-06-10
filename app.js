@@ -881,6 +881,7 @@ function render() {
   examTimer = null;
   app.classList.remove("has-sticky-actions");
   if (route === "home") renderHome();
+  if (route === "hotTopics") renderHotTopics();
   if (route === "bank") renderBank();
   if (route === "mistakes") renderMistakes();
   if (route === "mine") renderMine();
@@ -1268,6 +1269,7 @@ function renderHome() {
 
     ${renderDailyStats()}
     ${renderQuestionIdSearch(paper)}
+    ${renderHotTopicsEntry()}
 
     <section class="quick-grid" aria-label="快捷入口">
       ${renderQuickAction("模拟考试", "限时组卷", "📝", `startExam('${paper}')`)}
@@ -1285,6 +1287,68 @@ function renderHome() {
         ${paperMeta.chapters.map((chapter) => renderChapterNode(paper, chapter)).join("")}
       </div>
     </section>
+  `;
+}
+
+function openHotTopics() {
+  setRoute("hotTopics");
+}
+
+function renderHotTopicsEntry() {
+  return `
+    <button class="hot-topics-entry" onclick="openHotTopics()">
+      <span class="hot-topics-entry-icon">⚡</span>
+      <div class="hot-topics-entry-text">
+        <strong>热门题型速记</strong>
+        <span>考前高频题型 · 判断方法 · 易错点 · 记忆口诀</span>
+      </div>
+      <span class="hot-topics-entry-arrow">→</span>
+    </button>
+  `;
+}
+
+function renderHotTopics() {
+  const tipItems = ["反向题", "组合题", "最高诚信", "可保权益", "近因", "弥偿", "核保"];
+  app.innerHTML = `
+    <section class="hot-topics-page">
+      <div class="hot-topics-header">
+        <button class="ghost-button" onclick="setRoute('home')">← 返回首页</button>
+        <div>
+          <h2>热门题型速记</h2>
+          <p>后天考试冲刺 · 考前扫读高频题型</p>
+        </div>
+      </div>
+      <p class="hot-topics-tip"><strong>考前优先刷：</strong>${tipItems.join("、")}。</p>
+      <div class="hot-topics-grid">
+        ${renderHotTopicCard("A", "反向题", "不正确、不属于、例外、不能", "先圈方向词，再找「错误陈述」", "不要把正确陈述选走", "反向题，先看问法再看选项")}
+        ${renderHotTopicCard("B", "组合题", "i / ii / iii / iv", "先逐项判断小项，再看 A/B/C/D 组合", "不要直接看组合选项", "组合题先拆小项，再选组合")}
+        ${renderHotTopicCard("C", "最高诚信", "重要事实、披露、失实陈述、违反后补救、续保/更改条款/索偿时责任恢复", "先判断是否涉及「披露重要事实」", "欺诈与非欺诈补救不同", "诚信看披露，欺诈看更重补救")}
+        ${renderHotTopicCard("D", "可保权益", "法律认可关系、经济损失关系、人寿和财产的时间点", "先判断是否存在「被认可的经济利益关系」", "人寿也有可保权益；财产通常损失时要有", "有关系、有损失，才有可保权益")}
+        ${renderHotTopicCard("E", "近因原则", "有效近因、连续链条、介入原因、除外危险", "找主导原因，不是最后一个原因", "不是最后一个原因，而是最有效的原因", "近因不是最近，是最有效")}
+        ${renderHotTopicCard("F", "弥偿原则", "分担、代位、损余、平均条款", "先判断是否涉及「赔偿不超过实际损失」", "人寿不是严格弥偿；损余属于残余价值处理", "赔到损失为止，不能靠保险赚钱")}
+        ${renderHotTopicCard("G", "核保", "选择风险、应用条款、续保检讨、核保手册、保费率指南、拒绝名单", "先看题干是问「风险评估」还是「证券包销」", "保险核保是风险评估，不是证券包销", "核保三步：选风险、定条款、续保再审")}
+        ${renderHotTopicCard("H", "保单条款", "条件、保证、除外责任、免责条款", "区分「条件」（warranty 严格）和「除外责任」", "保证通常比普通条件更严格", "条件管行为，除外管不赔")}
+        ${renderHotTopicCard("I", "保险中介 / 监管", "持牌、受规管活动、保险业监管局、投诉局、操守", "注意投诉局范围和可投诉人身份", "投诉局范围和可投诉人身份有限制", "销售建议看牌照，投诉索偿看范围")}
+        ${renderHotTopicCard("J", "人寿保险常见题", "冷静期、自杀除外、复效、不可争议、保单贷款、红利选择、转让", "逐项回忆条款的时间/金额/条件", "不要和一般保险条款混淆", "人寿条款记期限，复效贷款红利转让")}
+      </div>
+    </section>
+  `;
+}
+
+function renderHotTopicCard(letter, title, keywords, method, pitfall, mnemonic) {
+  return `
+    <article class="hot-topic-card">
+      <div class="hot-topic-card-head">
+        <span class="hot-topic-card-letter">${escapeHtml(letter)}</span>
+        <strong>${escapeHtml(title)}</strong>
+      </div>
+      <div class="hot-topic-card-body">
+        <p><span class="hot-topic-label">关键词</span>${escapeHtml(keywords)}</p>
+        <p><span class="hot-topic-label">做题方法</span>${escapeHtml(method)}</p>
+        <p><span class="hot-topic-label">易错点</span>${escapeHtml(pitfall)}</p>
+        <p><span class="hot-topic-label">口诀</span><em>${escapeHtml(mnemonic)}</em></p>
+      </div>
+    </article>
   `;
 }
 
