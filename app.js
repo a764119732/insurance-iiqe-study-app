@@ -31,6 +31,9 @@ let highlightHint = "";
 let cachedQuestionSelection = null;
 let activeExam = null;
 let examTimer = null;
+let memoryTipsMarkdown = "";
+let memoryTipsLoadState = "idle";
+let memoryTipsSearchQuery = "";
 
 const defaultState = {
   answers: {},
@@ -170,6 +173,164 @@ function escapeHtml(value) {
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#039;");
+}
+
+function renderMemoryInline(value) {
+  return escapeHtml(value).replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+}
+
+function parseMemoryTableRow(line) {
+  return line.trim().replace(/^\|/, "").replace(/\|$/, "").split("|").map((cell) => cell.trim());
+}
+
+function isMemoryTableSeparator(line) {
+  if (!line?.trim().startsWith("|")) return false;
+  const cells = parseMemoryTableRow(line);
+  return cells.length > 0 && cells.every((cell) => /^:?-{2,}:?$/.test(cell));
+}
+
+function isMemoryMarkdownBlockStart(lines, index) {
+  const line = lines[index] || "";
+  return /^(#{1,3})\s+/.test(line)
+    || /^>\s?/.test(line)
+    || /^[-*]\s+/.test(line)
+    || /^---+\s*$/.test(line)
+    || (line.trim().startsWith("|") && isMemoryTableSeparator(lines[index + 1]));
+}
+
+function renderMemoryMarkdown(markdown) {
+  const lines = String(markdown || "").replace(/\r\n?/g, "\n").split("\n");
+  const html = [];
+  let index = 0;
+
+  while (index < lines.length) {
+    const line = lines[index];
+    if (!line.trim()) {
+      index += 1;
+      continue;
+    }
+
+    const heading = line.match(/^(#{1,3})\s+(.+)$/);
+    if (heading) {
+      const level = heading[1].length;
+      html.push(`<h${level}>${renderMemoryInline(heading[2].trim())}</h${level}>`);
+      index += 1;
+      continue;
+    }
+
+    if (/^---+\s*$/.test(line)) {
+      html.push("<hr>");
+      index += 1;
+      continue;
+    }
+
+    if (/^>\s?/.test(line)) {
+      const quoteLines = [];
+      while (index < lines.length && /^>\s?/.test(lines[index])) {
+        quoteLines.push(renderMemoryInline(lines[index].replace(/^>\s?/, "").trimEnd()));
+        index += 1;
+      }
+      html.push(`<blockquote>${quoteLines.join("<br>")}</blockquote>`);
+      continue;
+    }
+
+    if (/^[-*]\s+/.test(line)) {
+      const items = [];
+      while (index < lines.length && /^[-*]\s+/.test(lines[index])) {
+        items.push(`<li>${renderMemoryInline(lines[index].replace(/^[-*]\s+/, ""))}</li>`);
+        index += 1;
+      }
+      html.push(`<ul>${items.join("")}</ul>`);
+      continue;
+    }
+
+    if (line.trim().startsWith("|") && isMemoryTableSeparator(lines[index + 1])) {
+      const headers = parseMemoryTableRow(line);
+      index += 2;
+      const rows = [];
+      while (index < lines.length && lines[index].trim().startsWith("|")) {
+        rows.push(parseMemoryTableRow(lines[index]));
+        index += 1;
+      }
+      html.push(`
+        <div class="memory-table-wrap">
+          <table>
+            <thead><tr>${headers.map((cell) => `<th>${renderMemoryInline(cell)}</th>`).join("")}</tr></thead>
+            <tbody>${rows.map((row) => `<tr>${row.map((cell) => `<td>${renderMemoryInline(cell)}</td>`).join("")}</tr>`).join("")}</tbody>
+          </table>
+        </div>
+      `);
+      continue;
+    }
+
+    const paragraph = [];
+    while (index < lines.length && lines[index].trim() && !isMemoryMarkdownBlockStart(lines, index)) {
+      paragraph.push(lines[index].trim());
+      index += 1;
+    }
+    html.push(`<p>${renderMemoryInline(paragraph.join(" "))}</p>`);
+  }
+
+  return html.join("");
+}
+
+function getMemoryTipsBlocks(markdown) {
+  const lines = String(markdown || "").replace(/\r\n?/g, "\n").split("\n");
+  const blocks = [];
+  let current = [];
+
+  lines.forEach((line) => {
+    if (/^#{1,2}\s+/.test(line) && current.some((item) => item.trim())) {
+      blocks.push(current.join("\n"));
+      current = [line];
+      return;
+    }
+    current.push(line);
+  });
+
+  if (current.some((item) => item.trim())) blocks.push(current.join("\n"));
+  return blocks;
+}
+
+function renderMemoryTipsContent() {
+  if (memoryTipsLoadState === "loading" || memoryTipsLoadState === "idle") {
+    return '<div class="memory-empty">正在加载考前口诀…</div>';
+  }
+  if (memoryTipsLoadState === "error") {
+    return '<div class="memory-empty">考前口诀加载失败，请检查 data/exam_mnemonics.md</div>';
+  }
+
+  const query = memoryTipsSearchQuery.trim().toLocaleLowerCase();
+  const blocks = getMemoryTipsBlocks(memoryTipsMarkdown);
+  const visibleBlocks = query
+    ? blocks.filter((block) => block.toLocaleLowerCase().includes(query))
+    : blocks;
+
+  if (!visibleBlocks.length) {
+    return '<div class="memory-empty">没有找到相关口诀</div>';
+  }
+
+  return `<div class="memory-markdown">${visibleBlocks
+    .map((block) => `<section class="memory-tip">${renderMemoryMarkdown(block)}</section>`)
+    .join("")}</div>`;
+}
+
+async function loadMemoryTipsMarkdown() {
+  try {
+    const response = await fetch("data/exam_mnemonics.md");
+    if (!response.ok) throw new Error(String(response.status));
+    memoryTipsMarkdown = await response.text();
+    memoryTipsLoadState = "loaded";
+  } catch {
+    memoryTipsLoadState = "error";
+  }
+  if (route === "memoryTips") renderMemoryTips();
+}
+
+function updateMemoryTipsSearch(value) {
+  memoryTipsSearchQuery = value;
+  const content = document.querySelector(".memory-content");
+  if (content) content.innerHTML = renderMemoryTipsContent();
 }
 
 function getHighlightStore() {
@@ -887,6 +1048,7 @@ function render() {
   if (route === "quiz") renderQuiz();
   if (route === "exam") renderExam();
   if (route === "examResult") renderExamResult();
+  if (route === "memoryTips") return renderMemoryTips();
 }
 
 function getStats() {
@@ -1271,6 +1433,7 @@ function renderHome() {
 
     <section class="quick-grid" aria-label="快捷入口">
       ${renderQuickAction("热门题练习", "考前集中刷高频题", "⚡", `startHotPractice('${paper}')`)}
+      ${renderQuickAction("考前口诀", "最后冲刺速记", "🧠", "setRoute('memoryTips')")}
       ${renderQuickAction("模拟考试", "限时组卷", "📝", `startExam('${paper}')`)}
       ${renderQuickAction("随机练习", "打乱当前卷", "🎲", `startRandomPractice('${paper}')`)}
       ${renderQuickAction("我的错题", "按本卷复习", "✘", `startMistakeReview('${paper}')`)}
@@ -1287,6 +1450,40 @@ function renderHome() {
       </div>
     </section>
   `;
+}
+
+function renderMemoryTips() {
+  const shouldLoad = memoryTipsLoadState === "idle";
+  if (shouldLoad) memoryTipsLoadState = "loading";
+
+  app.innerHTML = `
+    <section class="memory-page">
+      <header class="memory-header">
+        <div class="memory-header-top">
+          <div>
+            <p class="eyebrow dark">考前扫读</p>
+            <h1>考前口诀</h1>
+          </div>
+          <button class="ghost-button" onclick="setRoute('home')">返回首页</button>
+        </div>
+        <p>先扫口诀，再刷热门题练习；错题加入收藏，考前最后再看收藏。</p>
+        <label class="memory-search">
+          <span>搜索</span>
+          <input
+            type="search"
+            value="${escapeHtml(memoryTipsSearchQuery)}"
+            placeholder="搜索口诀、考点、关键词，例如：经纪、偿付、递减定期、ADB"
+            oninput="updateMemoryTipsSearch(this.value)"
+          >
+        </label>
+      </header>
+      <main class="memory-content" aria-live="polite">
+        ${renderMemoryTipsContent()}
+      </main>
+    </section>
+  `;
+
+  if (shouldLoad) loadMemoryTipsMarkdown();
 }
 
 function renderQuickAction(title, subtitle, icon, action) {

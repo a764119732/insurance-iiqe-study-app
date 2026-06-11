@@ -1310,3 +1310,212 @@ button {
   border-color: var(--navy);
   box-shadow: 0 0 0 3px var(--primary-soft);
 }
+
+/* === Exam Mnemonics === */
+
+.memory-page {
+  display: grid;
+  gap: 14px;
+  min-width: 0;
+}
+
+.memory-header {
+  padding: 18px;
+  border: 1px solid var(--hero-border);
+  border-radius: 8px;
+  background: var(--hero-bg);
+  box-shadow: var(--shadow);
+}
+
+.memory-header-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.memory-header h1 {
+  margin: 2px 0 0;
+  color: var(--ink);
+  font-size: 26px;
+}
+
+.memory-header > p {
+  margin: 12px 0 0;
+  color: var(--muted);
+  line-height: 1.65;
+}
+
+.memory-search {
+  display: grid;
+  gap: 6px;
+  margin-top: 16px;
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.memory-search input {
+  width: 100%;
+  min-width: 0;
+  padding: 11px 12px;
+  border: 1px solid var(--control-border);
+  border-radius: 8px;
+  color: var(--ink);
+  background: var(--surface);
+  font: inherit;
+  font-weight: 400;
+  box-sizing: border-box;
+}
+
+.memory-search input:focus {
+  border-color: var(--navy);
+  outline: 2px solid var(--focus-ring);
+}
+
+.memory-content,
+.memory-markdown,
+.memory-tip {
+  min-width: 0;
+}
+
+.memory-markdown {
+  display: grid;
+  gap: 12px;
+}
+
+.memory-tip {
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  overflow-wrap: anywhere;
+}
+
+.memory-tip > :first-child {
+  margin-top: 0;
+}
+
+.memory-tip > :last-child {
+  margin-bottom: 0;
+}
+
+.memory-tip h1,
+.memory-tip h2,
+.memory-tip h3 {
+  color: var(--navy);
+  line-height: 1.35;
+}
+
+.memory-tip h1 {
+  margin: 0 0 12px;
+  font-size: 24px;
+}
+
+.memory-tip h2 {
+  margin: 0 0 12px;
+  font-size: 20px;
+}
+
+.memory-tip h3 {
+  margin: 18px 0 8px;
+  font-size: 16px;
+}
+
+.memory-tip p,
+.memory-tip li {
+  line-height: 1.75;
+}
+
+.memory-tip p {
+  margin: 10px 0;
+}
+
+.memory-tip ul {
+  margin: 10px 0;
+  padding-left: 22px;
+}
+
+.memory-tip blockquote {
+  margin: 12px 0;
+  padding: 12px 14px;
+  border-left: 4px solid var(--orange);
+  border-radius: 0 8px 8px 0;
+  color: var(--ink);
+  background: var(--warning-bg);
+  font-weight: 650;
+  line-height: 1.75;
+}
+
+.memory-tip hr {
+  margin: 18px 0;
+  border: 0;
+  border-top: 1px solid var(--divider);
+}
+
+.memory-table-wrap {
+  max-width: 100%;
+  margin: 12px 0;
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+.memory-table-wrap table {
+  width: 100%;
+  min-width: 420px;
+  border-collapse: collapse;
+}
+
+.memory-table-wrap th,
+.memory-table-wrap td {
+  padding: 9px 10px;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+  vertical-align: top;
+  line-height: 1.5;
+}
+
+.memory-table-wrap th {
+  color: var(--navy);
+  background: var(--primary-soft);
+}
+
+.memory-table-wrap tr:last-child td {
+  border-bottom: 0;
+}
+
+.memory-empty {
+  padding: 36px 18px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  text-align: center;
+  color: var(--muted);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+@media (max-width: 430px) {
+  .memory-header,
+  .memory-tip {
+    padding: 14px;
+  }
+
+  .memory-header-top {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .memory-header-top .ghost-button {
+    width: 100%;
+  }
+
+  .memory-tip h1 {
+    font-size: 21px;
+  }
+
+  .memory-tip h2 {
+    font-size: 18px;
+  }
+}
